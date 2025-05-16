@@ -60,7 +60,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>at.technikumwien.tourplanner/at.technikumwien.tourplanner.HelloApplication
+                            <mainClass>at.technikumwien.tourplanner/at.technikumwien.tourplanner.TourPlannerApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
