@@ -6,8 +6,8 @@ import javafx.collections.ObservableList;
 
 public class TourManager {
     private ObservableList<TourItem> tourList = FXCollections.observableArrayList(
-            new TourItem("Tour 1", true),
-            new TourItem("Tour 2", false)
+            new TourItem("Tour 1"),
+            new TourItem("Tour 2")
     );
 
     // read the list of tours
@@ -16,8 +16,7 @@ public class TourManager {
     }
 
     // create a new tour
-    public TourItem createNewTour(String name, boolean done) {
-        TourItem newTour = new TourItem(name, done);
+    public TourItem createNewTour(TourItem newTour) {
         tourList.add(newTour);
         return newTour;
     }

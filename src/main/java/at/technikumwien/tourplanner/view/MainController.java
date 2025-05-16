@@ -1,37 +1,74 @@
 package at.technikumwien.tourplanner.view;
 
-import at.technikumwien.tourplanner.model.TourItem;
+import at.technikumwien.tourplanner.viewmodel.EditTourViewModel;
 import at.technikumwien.tourplanner.viewmodel.MainViewModel;
+import at.technikumwien.tourplanner.viewmodel.ViewTourViewModel;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListView;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.io.IOException;
 
-public class MainController implements PropertyChangeListener {
-    private final MainViewModel viewModel;
-
-    public MainController(MainViewModel viewModel) {
-        this.viewModel = viewModel;
-    }
-
+public class MainController {
     @FXML
-    private ListView<TourItem> tourList = new ListView<>();
+    private StackPane dynamicContent;
+
+    private final MainViewModel mainViewModel;
+    private final ViewTourViewModel viewTourViewModel;
+    private final EditTourViewModel editTourViewModel;
+
+    public MainController(MainViewModel mainViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel) {
+        this.mainViewModel = mainViewModel;
+        this.viewTourViewModel = viewTourViewModel;
+        this.editTourViewModel = editTourViewModel;
+    }
 
     @FXML
     public void initialize() {
-        // Bind the tour list to the list view
-        tourList.setItems(viewModel.getTourList());
-        tourList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            viewModel.setSelectedTourItem(newValue);
+        // Listen for changes in selectedTourItem and isEditing to update the view
+        mainViewModel.viewProperty().addListener((observable, oldValue, newValue) -> {
+            updateDynamicContent();
         });
+        
+        // Initial update
+        updateDynamicContent();
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if ("newTour".equals(evt.getPropertyName())) {
-            // When a new tour is added, select it in the list
-            tourList.getSelectionModel().select((TourItem) evt.getNewValue());
+    private void updateDynamicContent() {
+        dynamicContent.getChildren().clear();
+        String fxmlToLoad = null;
+
+        // Determine which FXML file to load based on the current state of the view model using switch-case
+        switch (mainViewModel.getView()) {
+            case "editTour":
+                fxmlToLoad = "/at/technikumwien/tourplanner/edit-tour.fxml";
+                break;
+            case "viewTour":
+                fxmlToLoad = "/at/technikumwien/tourplanner/view-tour.fxml";
+                break;
+        }
+
+        if (fxmlToLoad != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlToLoad));
+
+                // Set a controller factory that provides the appropriate controller instances
+                loader.setControllerFactory(controllerClass -> {
+                    if (controllerClass == ViewTourController.class) {
+                        return new ViewTourController(viewTourViewModel);
+                    } else if( controllerClass == EditTourController.class) {
+                        return new EditTourController(editTourViewModel);
+                    }
+                    // Add more controller types as needed
+                    return null;
+                });
+
+                Node content = loader.load();
+                dynamicContent.getChildren().add(content);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

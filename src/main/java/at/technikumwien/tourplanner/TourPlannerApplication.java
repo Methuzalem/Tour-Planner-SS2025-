@@ -2,9 +2,12 @@ package at.technikumwien.tourplanner;
 
 import at.technikumwien.tourplanner.service.TourManager;
 import at.technikumwien.tourplanner.view.MainController;
-import at.technikumwien.tourplanner.view.TourViewController;
+import at.technikumwien.tourplanner.view.TourListController;
+import at.technikumwien.tourplanner.view.ViewTourController;
+import at.technikumwien.tourplanner.viewmodel.EditTourViewModel;
 import at.technikumwien.tourplanner.viewmodel.MainViewModel;
-import at.technikumwien.tourplanner.viewmodel.TourViewModel;
+import at.technikumwien.tourplanner.viewmodel.TourListViewModel;
+import at.technikumwien.tourplanner.viewmodel.ViewTourViewModel;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,28 +22,34 @@ public class TourPlannerApplication extends Application {
 
     // view models:
     private final MainViewModel mainViewModel;
-    private final TourViewModel tourViewModel;
+    private final TourListViewModel tourListViewModel;
+    private final ViewTourViewModel viewTourViewModel;
+    private final EditTourViewModel editTourViewModel;
 
     public TourPlannerApplication() {
         tourManager = new TourManager();
 
-        tourViewModel = new TourViewModel();
-        mainViewModel = new MainViewModel(tourManager, tourViewModel);
+        tourListViewModel = new TourListViewModel(tourManager);
+        viewTourViewModel = new ViewTourViewModel();
+        editTourViewModel = new EditTourViewModel();
+        mainViewModel = new MainViewModel(tourManager, tourListViewModel, viewTourViewModel);
     }
 
     @Override
     public void start(Stage stage) throws IOException {
-        Parent root = loadRootNode(mainViewModel, tourViewModel);
+        Parent root = loadRootNode(mainViewModel, tourListViewModel, viewTourViewModel, editTourViewModel);
         showStage(stage, root);
     }
 
-    public static Parent loadRootNode(MainViewModel mainViewModel, TourViewModel tourViewModel) throws IOException {
+    public static Parent loadRootNode(MainViewModel mainViewModel, TourListViewModel tourListViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(TourPlannerApplication.class.getResource("main-view.fxml"));
         fxmlLoader.setControllerFactory(controllerClass -> {
             if (controllerClass == MainController.class) {
-                return new MainController(mainViewModel);
-            } else if (controllerClass == TourViewController.class) {
-                return new TourViewController(tourViewModel);
+                return new MainController(mainViewModel, viewTourViewModel, editTourViewModel);
+            } else if (controllerClass == TourListController.class) {
+                return new TourListController(tourListViewModel);
+            } else if (controllerClass == ViewTourController.class) {
+                return new ViewTourController(viewTourViewModel);
             } else {
                 throw new IllegalArgumentException("Unknown controller class: " + controllerClass);
             }

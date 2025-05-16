@@ -20,15 +20,11 @@
     <HBox spacing="10">
         <!-- Left panel (Tour List) - 1/3 width -->
         <VBox spacing="10" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="100">
-            <Label text="Tour List:" style="-fx-font-weight: bold;"/>
-            <ListView fx:id="tourListView" VBox.vgrow="ALWAYS"/>
+            <fx:include source="tour-list.fxml" VBox.vgrow="ALWAYS" />
         </VBox>
 
-        <!-- Right panel (Placeholder) - 2/3 width -->
-        <VBox spacing="10" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="200">
-            <Label text="Tour Details:" style="-fx-font-weight: bold;"/>
-            <!-- Placeholder content -->
-        </VBox>
+        <!-- Right panel (Dynamic Content) - 2/3 width -->
+        <StackPane fx:id="dynamicContent" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="200"/>
     </HBox>
 </center>
     
