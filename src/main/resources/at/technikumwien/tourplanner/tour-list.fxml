@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="at.technikumwien.tourplanner.view.TourListController">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+
+    <HBox spacing="5" alignment="CENTER_LEFT">
+        <Label text="Tour List:" style="-fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS" />
+        <Button text="+" onAction="#onAddTourButtonClick" />
+    </HBox>
+    
+    <ListView fx:id="tourList" VBox.vgrow="ALWAYS"/>
+</VBox>
