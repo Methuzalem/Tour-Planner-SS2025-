@@ -1,8 +1,14 @@
 module at.technikumwien.tourplanner {
     requires javafx.controls;
     requires javafx.fxml;
-
+    requires java.desktop;
 
     opens at.technikumwien.tourplanner to javafx.fxml;
     exports at.technikumwien.tourplanner;
+    exports at.technikumwien.tourplanner.viewmodel;
+    opens at.technikumwien.tourplanner.viewmodel to javafx.fxml;
+    exports at.technikumwien.tourplanner.model;
+    opens at.technikumwien.tourplanner.model to javafx.fxml;
+    exports at.technikumwien.tourplanner.view;
+    opens at.technikumwien.tourplanner.view to javafx.fxml;
 }
