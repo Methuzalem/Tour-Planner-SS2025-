@@ -8,8 +8,9 @@ import java.util.UUID;
 
 public class TourManager {
     private ObservableList<TourItem> tourList = FXCollections.observableArrayList(
-            new TourItem("Tour 1"),
-            new TourItem("Tour 2")
+        new TourItem("Tour 1", "Description 1", "From 1", "To 1", "Car", 10.0, "1 hour", "Route info 1"),
+        new TourItem("Tour 2", "Description 2", "From 2", "To 2", "Bike", 20.0, "2 hours", "Route info 2"),
+        new TourItem("Tour 3", "Description 3", "From 3", "To 3", "Walk", 5.0, "30 minutes", "Route info 3")
     );
 
     // read the list of tours
