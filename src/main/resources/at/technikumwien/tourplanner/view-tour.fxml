@@ -25,35 +25,50 @@
             </right>
         </BorderPane>
         
-        <GridPane vgap="10" hgap="10">
-            <columnConstraints>
-                <ColumnConstraints hgrow="NEVER" minWidth="120"/>
-                <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
-            </columnConstraints>
-            
-            <Label text="Name:" style="-fx-font-weight: bold;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-            <Label fx:id="tourNameLabel" text="" wrapText="true" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-            
-            <Label text="Description:" style="-fx-font-weight: bold;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-            <Label fx:id="tourDescriptionLabel" text="" wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-            
-            <Label text="From:" style="-fx-font-weight: bold;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-            <Label fx:id="fromLabel" text="" wrapText="true" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-            
-            <Label text="To:" style="-fx-font-weight: bold;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-            <Label fx:id="toLabel" text="" wrapText="true" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-            
-            <Label text="Transport Type:" style="-fx-font-weight: bold;" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-            <Label fx:id="transportTypeLabel" text="" wrapText="true" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-            
-            <Label text="Distance (km):" style="-fx-font-weight: bold;" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-            <Label fx:id="distanceLabel" text="" wrapText="true" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-            
-            <Label text="Estimated Time:" style="-fx-font-weight: bold;" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
-            <Label fx:id="estimatedTimeLabel" text="" wrapText="true" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
-            
-            <Label text="Route Information:" style="-fx-font-weight: bold;" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
-            <Label fx:id="routeInformationLabel" text="" wrapText="true" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
-        </GridPane>
+        <TabPane tabClosingPolicy="UNAVAILABLE">
+            <Tab text="General">
+                <GridPane vgap="10" hgap="10">
+                    <padding>
+                        <Insets top="10" right="10" bottom="10" left="10"/>
+                    </padding>
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" minWidth="120"/>
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+                    </columnConstraints>
+                    
+                    <Label text="Name:" style="-fx-font-weight: bold;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <Label fx:id="tourNameLabel" text="" wrapText="true" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    
+                    <Label text="Description:" style="-fx-font-weight: bold;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <Label fx:id="tourDescriptionLabel" text="" wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    
+                    <Label text="From:" style="-fx-font-weight: bold;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <Label fx:id="fromLabel" text="" wrapText="true" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    
+                    <Label text="To:" style="-fx-font-weight: bold;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                    <Label fx:id="toLabel" text="" wrapText="true" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    
+                    <Label text="Transport Type:" style="-fx-font-weight: bold;" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                    <Label fx:id="transportTypeLabel" text="" wrapText="true" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                    
+                    <Label text="Distance (km):" style="-fx-font-weight: bold;" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                    <Label fx:id="distanceLabel" text="" wrapText="true" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                    
+                    <Label text="Estimated Time:" style="-fx-font-weight: bold;" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                    <Label fx:id="estimatedTimeLabel" text="" wrapText="true" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+                    
+                    <Label text="Route Information:" style="-fx-font-weight: bold;" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+                    <Label fx:id="routeInformationLabel" text="" wrapText="true" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+                </GridPane>
+            </Tab>
+            <Tab text="Route">
+                <VBox alignment="CENTER">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    <Label text="Map placeholder" style="-fx-font-size: 18;"/>
+                </VBox>
+            </Tab>
+        </TabPane>
     </VBox>
 </ScrollPane>
