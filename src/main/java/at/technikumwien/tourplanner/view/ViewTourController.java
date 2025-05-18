@@ -42,7 +42,75 @@ public class ViewTourController {
             )
         );
         
-        // ...existing code for all other label bindings...
+        tourDescriptionLabel.textProperty().bind(
+            Bindings.createStringBinding(
+                () -> {
+                    TourItem tour = viewModel.getCurrentTour();
+                    return tour != null ? tour.description() : "";
+                },
+                viewModel.currentTourProperty()
+            )
+        );
+        
+        fromLabel.textProperty().bind(
+            Bindings.createStringBinding(
+                () -> {
+                    TourItem tour = viewModel.getCurrentTour();
+                    return tour != null ? tour.from() : "";
+                },
+                viewModel.currentTourProperty()
+            )
+        );
+        
+        toLabel.textProperty().bind(
+            Bindings.createStringBinding(
+                () -> {
+                    TourItem tour = viewModel.getCurrentTour();
+                    return tour != null ? tour.to() : "";
+                },
+                viewModel.currentTourProperty()
+            )
+        );
+        
+        transportTypeLabel.textProperty().bind(
+            Bindings.createStringBinding(
+                () -> {
+                    TourItem tour = viewModel.getCurrentTour();
+                    return tour != null ? tour.transportType() : "";
+                },
+                viewModel.currentTourProperty()
+            )
+        );
+        
+        distanceLabel.textProperty().bind(
+            Bindings.createStringBinding(
+                () -> {
+                    TourItem tour = viewModel.getCurrentTour();
+                    return tour != null ? String.valueOf(tour.distance()) : "";
+                },
+                viewModel.currentTourProperty()
+            )
+        );
+        
+        estimatedTimeLabel.textProperty().bind(
+            Bindings.createStringBinding(
+                () -> {
+                    TourItem tour = viewModel.getCurrentTour();
+                    return tour != null ? tour.estimatedTime() : "";
+                },
+                viewModel.currentTourProperty()
+            )
+        );
+        
+        routeInformationLabel.textProperty().bind(
+            Bindings.createStringBinding(
+                () -> {
+                    TourItem tour = viewModel.getCurrentTour();
+                    return tour != null ? tour.routeInformation() : "";
+                },
+                viewModel.currentTourProperty()
+            )
+        );
         
         // Disable the buttons if no tour is selected
         editButton.disableProperty().bind(Bindings.isNull(viewModel.currentTourProperty()));
