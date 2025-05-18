@@ -11,7 +11,7 @@ import java.beans.PropertyChangeSupport;
 public class TourListViewModel {
     private final TourManager tourManager;
     private final PropertyChangeSupport tourSelectedEvent = new PropertyChangeSupport(this);
-    private final PropertyChangeSupport editTourEvent = new PropertyChangeSupport(this);
+    private final PropertyChangeSupport createTourEvent = new PropertyChangeSupport(this);
 
     public TourListViewModel(TourManager tourManager) {
         this.tourManager = tourManager;
@@ -21,8 +21,8 @@ public class TourListViewModel {
         tourSelectedEvent.addPropertyChangeListener(listener);
     }
 
-    public void editTourListListener(PropertyChangeListener listener) {
-        editTourEvent.addPropertyChangeListener(listener);
+    public void addCreateNewTourListener(PropertyChangeListener listener) {
+        createTourEvent.addPropertyChangeListener(listener);
     }
 
     public ObservableList<TourItem> getTourList() {
@@ -36,6 +36,6 @@ public class TourListViewModel {
 
     public void createNewTour() {
         TourItem newTour = new TourItem("New Tour");
-        editTourEvent.firePropertyChange(Event.EDIT_TOUR, null, newTour);
+        createTourEvent.firePropertyChange(Event.EDIT_TOUR, null, newTour);
     }
 }
