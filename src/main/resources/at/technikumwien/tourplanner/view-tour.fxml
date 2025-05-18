@@ -12,7 +12,19 @@
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
         </padding>
     
-        <Label text="Tour Details" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+        <BorderPane>
+            <left>
+                <Label text="Tour Details" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+            </left>
+            <right>
+                <HBox spacing="10" alignment="CENTER_RIGHT">
+                    <Button text="Edit Tour" fx:id="editButton" onAction="#onEditButtonClick"/>
+                    <Button text="Delete Tour" fx:id="deleteButton" onAction="#onDeleteButtonClick" 
+                           style="-fx-background-color: #ffcccc;"/>
+                </HBox>
+            </right>
+        </BorderPane>
+        
         <GridPane vgap="10" hgap="10">
             <columnConstraints>
                 <ColumnConstraints hgrow="NEVER" minWidth="120"/>
@@ -43,11 +55,5 @@
             <Label text="Route Information:" style="-fx-font-weight: bold;" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
             <Label fx:id="routeInformationLabel" text="" wrapText="true" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
         </GridPane>
-        
-        <HBox spacing="10" alignment="CENTER_RIGHT">
-            <Button text="Edit Tour" fx:id="editButton" onAction="#onEditButtonClick"/>
-            <Button text="Delete Tour" fx:id="deleteButton" onAction="#onDeleteButtonClick" 
-                   style="-fx-background-color: #ffcccc;"/>
-        </HBox>
     </VBox>
 </ScrollPane>
