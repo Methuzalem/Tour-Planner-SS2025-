@@ -4,24 +4,48 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+<ScrollPane fitToWidth="true" xmlns:fx="http://javafx.com/fxml"
       fx:controller="at.technikumwien.tourplanner.view.ViewTourController"
       minWidth="300" minHeight="150">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
-
-    <Label text="Tour Details" style="-fx-font-weight: bold;"/>
-    <GridPane vgap="10" hgap="10">
-        <columnConstraints>
-            <ColumnConstraints hgrow="NEVER" minWidth="100"/>
-            <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
-        </columnConstraints>
+    <VBox spacing="20.0">
+        <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+        </padding>
+    
+        <Label text="Tour Details" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+        <GridPane vgap="10" hgap="10">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" minWidth="120"/>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="200"/>
+            </columnConstraints>
+            
+            <Label text="Name:" style="-fx-font-weight: bold;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <Label fx:id="tourNameLabel" text="" wrapText="true" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+            
+            <Label text="Description:" style="-fx-font-weight: bold;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <Label fx:id="tourDescriptionLabel" text="" wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            
+            <Label text="From:" style="-fx-font-weight: bold;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <Label fx:id="fromLabel" text="" wrapText="true" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            
+            <Label text="To:" style="-fx-font-weight: bold;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <Label fx:id="toLabel" text="" wrapText="true" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            
+            <Label text="Transport Type:" style="-fx-font-weight: bold;" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            <Label fx:id="transportTypeLabel" text="" wrapText="true" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+            
+            <Label text="Distance (km):" style="-fx-font-weight: bold;" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+            <Label fx:id="distanceLabel" text="" wrapText="true" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+            
+            <Label text="Estimated Time:" style="-fx-font-weight: bold;" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+            <Label fx:id="estimatedTimeLabel" text="" wrapText="true" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+            
+            <Label text="Route Information:" style="-fx-font-weight: bold;" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+            <Label fx:id="routeInformationLabel" text="" wrapText="true" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+        </GridPane>
         
-        <Label text="Name:" style="-fx-font-weight: bold;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <Label fx:id="tourNameLabel" text="" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-        
-        <Label text="Description:" style="-fx-font-weight: bold;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <Label fx:id="tourDetailsLabel" text="Tour details will be displayed here." GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-    </GridPane>
-</VBox>
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <Button text="Edit Tour" fx:id="editButton" onAction="#onEditButtonClick"/>
+        </HBox>
+    </VBox>
+</ScrollPane>
