@@ -59,7 +59,7 @@ public class TourPlannerApplication extends Application {
     }
 
     public static void showStage(Stage stage, Parent root) {
-        Scene scene = new Scene(root, 600, 400);
+        Scene scene = new Scene(root, 1200, 800);
         stage.setTitle("Tour Planner");
         stage.setScene(scene);
         stage.show();
