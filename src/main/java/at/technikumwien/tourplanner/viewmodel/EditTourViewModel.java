@@ -11,6 +11,7 @@ import java.beans.PropertyChangeSupport;
 public class EditTourViewModel {
     private final TourManager tourManager;
     private final PropertyChangeSupport cancelEditEvent = new PropertyChangeSupport(this);
+    private final PropertyChangeSupport validationErrorEvent = new PropertyChangeSupport(this);
 
     // Properties for all tour fields
     private final SimpleStringProperty id = new SimpleStringProperty(null);
@@ -86,6 +87,12 @@ public class EditTourViewModel {
     }
 
     public void createNewTour() {
+        // Validate input before creating a tour
+        if (!validateInputs()) {
+            validationErrorEvent.firePropertyChange(Event.VALIDATION_ERROR, null, null);
+            return;
+        }
+        
         TourItem tourItem = new TourItem(
             id.get(),
             name.get(),
@@ -102,6 +109,27 @@ public class EditTourViewModel {
 
         // Reset all form fields
         resetFormFields();
+    }
+    
+    private boolean validateInputs() {
+        // Simple validation to check that fields meet their type requirements
+        try {
+            // Check that name, from and to are not empty
+            if (name.get() == null || name.get().trim().isEmpty() ||
+                from.get() == null || from.get().trim().isEmpty() ||
+                to.get() == null || to.get().trim().isEmpty()) {
+                return false;
+            }
+            
+            // Make sure distance is a valid number
+            if (distance.get() < 0) {
+                return false;
+            }
+            
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private void resetFormFields() {
@@ -126,5 +154,9 @@ public class EditTourViewModel {
 
     public void addCancelEditListener(PropertyChangeListener listener) {
         cancelEditEvent.addPropertyChangeListener(listener);
+    }
+    
+    public void addValidationErrorListener(PropertyChangeListener listener) {
+        validationErrorEvent.addPropertyChangeListener(listener);
     }
 }

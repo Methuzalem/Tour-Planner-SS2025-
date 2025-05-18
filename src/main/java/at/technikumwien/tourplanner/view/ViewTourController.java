@@ -4,8 +4,12 @@ import at.technikumwien.tourplanner.model.TourItem;
 import at.technikumwien.tourplanner.viewmodel.ViewTourViewModel;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+
+import java.util.Optional;
 
 public class ViewTourController {
     @FXML private Label tourNameLabel;
@@ -17,6 +21,7 @@ public class ViewTourController {
     @FXML private Label estimatedTimeLabel;
     @FXML private Label routeInformationLabel;
     @FXML private Button editButton;
+    @FXML private Button deleteButton;
     
     private final ViewTourViewModel viewModel;
 
@@ -41,10 +46,7 @@ public class ViewTourController {
             Bindings.createStringBinding(
                 () -> {
                     TourItem tour = viewModel.getCurrentTour();
-                    return tour != null ? 
-                        (tour.description() != null && !tour.description().isEmpty() ? 
-                            tour.description() : "No description available") : 
-                        "No tour selected";
+                    return tour != null ? tour.description() : "";
                 },
                 viewModel.currentTourProperty()
             )
@@ -54,10 +56,7 @@ public class ViewTourController {
             Bindings.createStringBinding(
                 () -> {
                     TourItem tour = viewModel.getCurrentTour();
-                    return tour != null ? 
-                        (tour.from() != null && !tour.from().isEmpty() ? 
-                            tour.from() : "Not specified") : 
-                        "";
+                    return tour != null ? tour.from() : "";
                 },
                 viewModel.currentTourProperty()
             )
@@ -67,10 +66,7 @@ public class ViewTourController {
             Bindings.createStringBinding(
                 () -> {
                     TourItem tour = viewModel.getCurrentTour();
-                    return tour != null ? 
-                        (tour.to() != null && !tour.to().isEmpty() ? 
-                            tour.to() : "Not specified") : 
-                        "";
+                    return tour != null ? tour.to() : "";
                 },
                 viewModel.currentTourProperty()
             )
@@ -80,10 +76,7 @@ public class ViewTourController {
             Bindings.createStringBinding(
                 () -> {
                     TourItem tour = viewModel.getCurrentTour();
-                    return tour != null ? 
-                        (tour.transportType() != null && !tour.transportType().isEmpty() ? 
-                            tour.transportType() : "Not specified") : 
-                        "";
+                    return tour != null ? tour.transportType() : "";
                 },
                 viewModel.currentTourProperty()
             )
@@ -93,10 +86,7 @@ public class ViewTourController {
             Bindings.createStringBinding(
                 () -> {
                     TourItem tour = viewModel.getCurrentTour();
-                    return tour != null ? 
-                        (tour.distance() != null ? 
-                            tour.distance().toString() : "Not specified") : 
-                        "";
+                    return tour != null ? String.valueOf(tour.distance()) : "";
                 },
                 viewModel.currentTourProperty()
             )
@@ -106,10 +96,7 @@ public class ViewTourController {
             Bindings.createStringBinding(
                 () -> {
                     TourItem tour = viewModel.getCurrentTour();
-                    return tour != null ? 
-                        (tour.estimatedTime() != null && !tour.estimatedTime().isEmpty() ? 
-                            tour.estimatedTime() : "Not specified") : 
-                        "";
+                    return tour != null ? tour.estimatedTime() : "";
                 },
                 viewModel.currentTourProperty()
             )
@@ -119,22 +106,36 @@ public class ViewTourController {
             Bindings.createStringBinding(
                 () -> {
                     TourItem tour = viewModel.getCurrentTour();
-                    return tour != null ? 
-                        (tour.routeInformation() != null && !tour.routeInformation().isEmpty() ? 
-                            tour.routeInformation() : "No route information available") : 
-                        "";
+                    return tour != null ? tour.routeInformation() : "";
                 },
                 viewModel.currentTourProperty()
             )
         );
         
-        // Disable the edit button if no tour is selected
+        // Disable the buttons if no tour is selected
         editButton.disableProperty().bind(Bindings.isNull(viewModel.currentTourProperty()));
+        deleteButton.disableProperty().bind(Bindings.isNull(viewModel.currentTourProperty()));
     }
     
     @FXML
     protected void onEditButtonClick() {
         // Call the view model method to switch to edit mode for the current tour
         viewModel.editCurrentTour();
+    }
+    
+    @FXML
+    protected void onDeleteButtonClick() {
+        // Show a confirmation dialog
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmDialog.setTitle("Delete Tour");
+        confirmDialog.setHeaderText("Delete Tour");
+        confirmDialog.setContentText("Are you sure you want to delete this tour? This action cannot be undone.");
+        
+        // Handle the user's response
+        Optional<ButtonType> result = confirmDialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            // User confirmed, proceed with deletion
+            viewModel.deleteCurrentTour();
+        }
     }
 }

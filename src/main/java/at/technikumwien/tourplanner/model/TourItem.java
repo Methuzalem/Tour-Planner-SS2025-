@@ -27,7 +27,7 @@ public record TourItem(
             Double distance, 
             String estimatedTime, 
             String routeInformation) {
-        this(null, name, description, from, to, transportType, distance, estimatedTime, routeInformation);
+        this(UUID.randomUUID().toString(), name, description, from, to, transportType, distance, estimatedTime, routeInformation);
     }
     
     @Override

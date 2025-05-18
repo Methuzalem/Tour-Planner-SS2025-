@@ -1,5 +1,6 @@
 package at.technikumwien.tourplanner.view;
 
+import at.technikumwien.tourplanner.utils.Event;
 import at.technikumwien.tourplanner.viewmodel.EditTourViewModel;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -24,8 +25,19 @@ public class EditTourController {
     
     @FXML
     protected void onSaveButtonClick() {
-        // Create the new tour
-        viewModel.createNewTour();
+        // Validate distance field before saving
+        try {
+            if (!distanceTextField.getText().trim().isEmpty()) {
+                Double.parseDouble(distanceTextField.getText());
+            }
+            viewModel.createNewTour();
+        } catch (NumberFormatException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Input Error");
+            alert.setHeaderText("Invalid input");
+            alert.setContentText("Distance must be a valid number.");
+            alert.showAndWait();
+        }
     }
     
     @FXML
@@ -43,6 +55,13 @@ public class EditTourController {
         Bindings.bindBidirectional(fromTextField.textProperty(), viewModel.fromProperty());
         Bindings.bindBidirectional(toTextField.textProperty(), viewModel.toProperty());
         transportTypeComboBox.valueProperty().bindBidirectional(viewModel.transportTypeProperty());
+        
+        // Add focus lost listener for distance validation
+        distanceTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) { // Focus lost
+                validateDistanceField();
+            }
+        });
         
         // Fix: Use the correct binding method for StringProperty and DoubleProperty with a converter
         StringConverter<Number> converter = new StringConverter<>() {
@@ -69,5 +88,34 @@ public class EditTourController {
         
         Bindings.bindBidirectional(estimatedTimeTextField.textProperty(), viewModel.estimatedTimeProperty());
         Bindings.bindBidirectional(routeInfoTextArea.textProperty(), viewModel.routeInformationProperty());
+        
+        // Add listener for validation errors
+        viewModel.addValidationErrorListener((evt) -> {
+            if (evt.getPropertyName().equals(Event.VALIDATION_ERROR)) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Input Error");
+                alert.setHeaderText("Invalid input");
+                alert.setContentText("Please check your inputs and try again.");
+                alert.showAndWait();
+            }
+        });
+    }
+    
+    private void validateDistanceField() {
+        String text = distanceTextField.getText();
+        if (!text.trim().isEmpty()) {
+            try {
+                Double.parseDouble(text);
+            } catch (NumberFormatException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Input Error");
+                alert.setHeaderText("Invalid input");
+                alert.setContentText("Distance must be a valid number.");
+                alert.showAndWait();
+                
+                // Reset to the previous valid value
+                distanceTextField.setText(String.valueOf(viewModel.distanceProperty().get()));
+            }
+        }
     }
 }
