@@ -30,7 +30,7 @@ public class TourPlannerApplication extends Application {
         tourManager = new TourManager();
 
         tourListViewModel = new TourListViewModel(tourManager);
-        viewTourViewModel = new ViewTourViewModel();
+        viewTourViewModel = new ViewTourViewModel(tourManager);
         editTourViewModel = new EditTourViewModel(tourManager);
         mainViewModel = new MainViewModel(tourManager, tourListViewModel, viewTourViewModel, editTourViewModel);
     }

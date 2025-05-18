@@ -46,6 +46,8 @@
         
         <HBox spacing="10" alignment="CENTER_RIGHT">
             <Button text="Edit Tour" fx:id="editButton" onAction="#onEditButtonClick"/>
+            <Button text="Delete Tour" fx:id="deleteButton" onAction="#onDeleteButtonClick" 
+                   style="-fx-background-color: #ffcccc;"/>
         </HBox>
     </VBox>
 </ScrollPane>

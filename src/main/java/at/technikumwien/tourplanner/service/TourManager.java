@@ -64,4 +64,15 @@ public class TourManager {
         }
         return null;
     }
+    
+    // Delete a tour by ID
+    public boolean deleteTour(String id) {
+        for (int i = 0; i < tourList.size(); i++) {
+            if (tourList.get(i).id().equals(id)) {
+                tourList.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
 }
