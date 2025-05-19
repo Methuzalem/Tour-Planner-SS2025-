@@ -1,7 +1,6 @@
 package at.technikumwien.tourplanner.service;
 
 import at.technikumwien.tourplanner.model.LogItem;
-import at.technikumwien.tourplanner.model.TourItem;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
