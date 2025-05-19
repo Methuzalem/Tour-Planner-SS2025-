@@ -5,6 +5,7 @@ import at.technikumwien.tourplanner.model.TourItem;
 import at.technikumwien.tourplanner.service.LogManager;
 import at.technikumwien.tourplanner.service.TourManager;
 import at.technikumwien.tourplanner.utils.Event;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -17,6 +18,8 @@ public class LogListViewModel {
     private final String today = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     private final PropertyChangeSupport logSelectedEvent = new PropertyChangeSupport(this);
     private final PropertyChangeSupport createLogEvent = new PropertyChangeSupport(this);
+    private final ObservableList<LogItem> allLogs = FXCollections.observableArrayList();
+    private final ObservableList<LogItem> filteredLogs = FXCollections.observableArrayList();
 
     public LogListViewModel(LogManager logManager) {
         this.logManager = logManager;
@@ -28,6 +31,14 @@ public class LogListViewModel {
 
     public void addCreateNewLogListener(PropertyChangeListener listener) {
         createLogEvent.addPropertyChangeListener(listener);
+    }
+
+    public void loadLogsForTour(String tourId) {
+        filteredLogs.setAll(
+                getLogList().stream()
+                        .filter(log -> log.getTourId().equals(tourId))
+                        .toList()
+        );
     }
 
     public ObservableList<LogItem> getLogList() {
@@ -42,5 +53,9 @@ public class LogListViewModel {
     public void createNewLog() {
         LogItem newLog = new LogItem(today);
         createLogEvent.firePropertyChange(Event.EDIT_LOG, null, newLog);
+    }
+
+    public ObservableList<LogItem> getFilteredLogs() {
+        return filteredLogs;
     }
 }

@@ -1,9 +1,7 @@
 package at.technikumwien.tourplanner.view;
 
-import at.technikumwien.tourplanner.viewmodel.EditTourViewModel;
-import at.technikumwien.tourplanner.viewmodel.LogListViewModel;
-import at.technikumwien.tourplanner.viewmodel.MainViewModel;
-import at.technikumwien.tourplanner.viewmodel.ViewTourViewModel;
+import at.technikumwien.tourplanner.model.TourItem;
+import at.technikumwien.tourplanner.viewmodel.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -21,12 +19,14 @@ public class MainController {
     private final MainViewModel mainViewModel;
     private final ViewTourViewModel viewTourViewModel;
     private final EditTourViewModel editTourViewModel;
+    private final TourListViewModel tourListViewModel;
     private final LogListViewModel logListViewModel;
 
-    public MainController(MainViewModel mainViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel, LogListViewModel logListViewModel) {
+    public MainController(MainViewModel mainViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel, TourListViewModel tourListViewModel, LogListViewModel logListViewModel) {
         this.mainViewModel = mainViewModel;
         this.viewTourViewModel = viewTourViewModel;
         this.editTourViewModel = editTourViewModel;
+        this.tourListViewModel = tourListViewModel;
         this.logListViewModel = logListViewModel;
     }
 
@@ -36,6 +36,13 @@ public class MainController {
         mainViewModel.viewProperty().addListener((observable, oldValue, newValue) -> {
             updateDynamicContent();
             updateDynamicContent2();
+        });
+
+        // if Tour is picked, give accurate Log-List
+        tourListViewModel.addTourSelectedListener(evt -> {
+            if (evt.getNewValue() instanceof TourItem tour) {
+                logListViewModel.loadLogsForTour(tour.id());
+            }
         });
         
         // Initial update
@@ -88,7 +95,7 @@ public class MainController {
             // Controller mit ViewModel setzen
             loader.setControllerFactory(param -> {
                 if (param == LogListController.class) {
-                    return new LogListController(logListViewModel);  // <-- hier musst du logListViewModel vorher definieren
+                    return new LogListController(logListViewModel, tourListViewModel);  // <-- hier musst du logListViewModel vorher definieren
                 }
                 return null;
             });

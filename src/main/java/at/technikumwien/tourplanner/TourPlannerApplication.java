@@ -47,7 +47,7 @@ public class TourPlannerApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(TourPlannerApplication.class.getResource("main-view.fxml"));
         fxmlLoader.setControllerFactory(controllerClass -> {
             if (controllerClass == MainController.class) {
-                return new MainController(mainViewModel, viewTourViewModel, editTourViewModel, logListViewModel);
+                return new MainController(mainViewModel, viewTourViewModel, editTourViewModel, tourListViewModel, logListViewModel);
             } else if (controllerClass == TourListController.class) {
                 return new TourListController(tourListViewModel);
             } else if (controllerClass == ViewTourController.class) {
