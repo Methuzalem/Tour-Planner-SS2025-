@@ -34,7 +34,7 @@ public class TourPlannerApplication extends Application {
         viewTourViewModel = new ViewTourViewModel(tourManager);
         editTourViewModel = new EditTourViewModel(tourManager);
         logListViewModel = new LogListViewModel(logManager);
-        mainViewModel = new MainViewModel(tourManager, tourListViewModel, viewTourViewModel, editTourViewModel);
+        mainViewModel = new MainViewModel(tourManager, tourListViewModel, viewTourViewModel, editTourViewModel, logListViewModel);
     }
 
     @Override

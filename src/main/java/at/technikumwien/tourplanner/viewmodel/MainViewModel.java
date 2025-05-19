@@ -10,13 +10,15 @@ public class MainViewModel {
     private final TourListViewModel tourListViewModel;
     private final ViewTourViewModel viewTourViewModel;
     private final EditTourViewModel editTourViewModel;
+    private final LogListViewModel logListViewModel;
     private final SimpleStringProperty view = new SimpleStringProperty("viewTour");
 
-    public MainViewModel(TourManager tourManager, TourListViewModel tourListViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel) {
+    public MainViewModel(TourManager tourManager, TourListViewModel tourListViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel, LogListViewModel logListViewModel) {
         this.tourManager = tourManager;
         this.tourListViewModel = tourListViewModel;
         this.viewTourViewModel = viewTourViewModel;
         this.editTourViewModel = editTourViewModel;
+        this.logListViewModel = logListViewModel;
 
         tourListViewModel.addTourSelectedListener(evt -> {
             if (evt.getPropertyName().equals(Event.TOUR_SELECTED)) {

@@ -33,7 +33,7 @@ public class LogListViewModel {
     public void loadLogsForTour(String tourId) {
         filteredLogs.setAll(
                 getLogList().stream()
-                        .filter(log -> log.getTourId().equals(tourId))
+                        .filter(log -> log.getTourId().equals(tourId)) //check if selected Tour equals TourIDs in List
                         .toList()
         );
     }

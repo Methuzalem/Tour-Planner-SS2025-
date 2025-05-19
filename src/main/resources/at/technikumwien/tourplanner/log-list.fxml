@@ -17,6 +17,9 @@
         <Label text="Log List" style="-fx-font-weight: bold;"/>
         <Region HBox.hgrow="ALWAYS" />
         <Button text="Create Log" onAction="#onAddLogButtonClick" />
+        <Button text="Edit Log" fx:id="editButton" onAction="#onEditLogButtonClick"/>
+        <Button text="Delete Log" fx:id="deleteButton" onAction="#onDeleteLogButtonClick"
+                style="-fx-background-color: #ffcccc;"/>
     </HBox>
 
     <ListView fx:id="logList" VBox.vgrow="ALWAYS"/>
