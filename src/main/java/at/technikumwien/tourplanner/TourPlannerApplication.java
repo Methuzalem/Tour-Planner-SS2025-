@@ -1,13 +1,11 @@
 package at.technikumwien.tourplanner;
 
+import at.technikumwien.tourplanner.service.LogManager;
 import at.technikumwien.tourplanner.service.TourManager;
 import at.technikumwien.tourplanner.view.MainController;
 import at.technikumwien.tourplanner.view.TourListController;
 import at.technikumwien.tourplanner.view.ViewTourController;
-import at.technikumwien.tourplanner.viewmodel.EditTourViewModel;
-import at.technikumwien.tourplanner.viewmodel.MainViewModel;
-import at.technikumwien.tourplanner.viewmodel.TourListViewModel;
-import at.technikumwien.tourplanner.viewmodel.ViewTourViewModel;
+import at.technikumwien.tourplanner.viewmodel.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,33 +17,37 @@ import java.io.IOException;
 public class TourPlannerApplication extends Application {
     // business layer
     private final TourManager tourManager;
+    private final LogManager logManager;
 
     // view models:
     private final MainViewModel mainViewModel;
     private final TourListViewModel tourListViewModel;
     private final ViewTourViewModel viewTourViewModel;
     private final EditTourViewModel editTourViewModel;
+    private final LogListViewModel logListViewModel;
 
     public TourPlannerApplication() {
         tourManager = new TourManager();
+        logManager = new LogManager();
 
         tourListViewModel = new TourListViewModel(tourManager);
         viewTourViewModel = new ViewTourViewModel(tourManager);
         editTourViewModel = new EditTourViewModel(tourManager);
+        logListViewModel = new LogListViewModel(logManager);
         mainViewModel = new MainViewModel(tourManager, tourListViewModel, viewTourViewModel, editTourViewModel);
     }
 
     @Override
     public void start(Stage stage) throws IOException {
-        Parent root = loadRootNode(mainViewModel, tourListViewModel, viewTourViewModel, editTourViewModel);
+        Parent root = loadRootNode(mainViewModel, tourListViewModel, viewTourViewModel, editTourViewModel, logListViewModel);
         showStage(stage, root);
     }
 
-    public static Parent loadRootNode(MainViewModel mainViewModel, TourListViewModel tourListViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel) throws IOException {
+    public static Parent loadRootNode(MainViewModel mainViewModel, TourListViewModel tourListViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel, LogListViewModel logListViewModel) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(TourPlannerApplication.class.getResource("main-view.fxml"));
         fxmlLoader.setControllerFactory(controllerClass -> {
             if (controllerClass == MainController.class) {
-                return new MainController(mainViewModel, viewTourViewModel, editTourViewModel);
+                return new MainController(mainViewModel, viewTourViewModel, editTourViewModel, logListViewModel);
             } else if (controllerClass == TourListController.class) {
                 return new TourListController(tourListViewModel);
             } else if (controllerClass == ViewTourController.class) {

@@ -1,6 +1,7 @@
 package at.technikumwien.tourplanner.view;
 
 import at.technikumwien.tourplanner.viewmodel.EditTourViewModel;
+import at.technikumwien.tourplanner.viewmodel.LogListViewModel;
 import at.technikumwien.tourplanner.viewmodel.MainViewModel;
 import at.technikumwien.tourplanner.viewmodel.ViewTourViewModel;
 import javafx.fxml.FXML;
@@ -14,14 +15,19 @@ public class MainController {
     @FXML
     private StackPane dynamicContent;
 
+    @FXML
+    private StackPane dynamicContent2;
+
     private final MainViewModel mainViewModel;
     private final ViewTourViewModel viewTourViewModel;
     private final EditTourViewModel editTourViewModel;
+    private final LogListViewModel logListViewModel;
 
-    public MainController(MainViewModel mainViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel) {
+    public MainController(MainViewModel mainViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel, LogListViewModel logListViewModel) {
         this.mainViewModel = mainViewModel;
         this.viewTourViewModel = viewTourViewModel;
         this.editTourViewModel = editTourViewModel;
+        this.logListViewModel = logListViewModel;
     }
 
     @FXML
@@ -29,10 +35,12 @@ public class MainController {
         // Listen for changes in selectedTourItem and isEditing to update the view
         mainViewModel.viewProperty().addListener((observable, oldValue, newValue) -> {
             updateDynamicContent();
+            updateDynamicContent2();
         });
         
         // Initial update
         updateDynamicContent();
+        updateDynamicContent2();
     }
 
     private void updateDynamicContent() {
@@ -69,6 +77,26 @@ public class MainController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void updateDynamicContent2() {
+        dynamicContent2.getChildren().clear();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/at/technikumwien/tourplanner/log-list.fxml"));
+
+            // Controller mit ViewModel setzen
+            loader.setControllerFactory(param -> {
+                if (param == LogListController.class) {
+                    return new LogListController(logListViewModel);  // <-- hier musst du logListViewModel vorher definieren
+                }
+                return null;
+            });
+
+            Node content = loader.load();
+            dynamicContent2.getChildren().add(content);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
