@@ -48,7 +48,7 @@ public class EditTourController {
     public void initialize() {
         // Populate transport type options
         transportTypeComboBox.getItems().addAll("Car", "Bicycle", "Walking", "Public Transport", "Other");
-        
+
         // Bind all fields to the view model properties
         Bindings.bindBidirectional(tourNameTextField.textProperty(), viewModel.nameProperty());
         Bindings.bindBidirectional(tourDescriptionTextArea.textProperty(), viewModel.descriptionProperty());

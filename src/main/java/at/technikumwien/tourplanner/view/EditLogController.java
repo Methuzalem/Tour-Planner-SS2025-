@@ -1,16 +1,39 @@
 package at.technikumwien.tourplanner.view;
 
+import at.technikumwien.tourplanner.viewmodel.EditLogViewModel;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.DatePicker;
+import javafx.scene.control.*;
 
 import java.time.format.DateTimeFormatter;
 
 public class EditLogController {
-    @FXML
-    public DatePicker datePicker;
+    private EditLogViewModel viewModel;
 
-    String selectedDateString = datePicker.getValue().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+    public EditLogController(EditLogViewModel viewModel) {this.viewModel = viewModel;}
+
+    @FXML private DatePicker datePicker;
+    @FXML private TextArea commentTextArea;
+    @FXML private Slider difficultySlider;
+    @FXML private TextField totalTimeTextField;
+    @FXML private TextField distanceTextField;
+    @FXML private ComboBox<String> ratingComboBox;
+
+    @FXML
+    public void initialize() {
+        // Populate transport type options
+        ratingComboBox.getItems().addAll("5 - best", "4 - good", "3 - normal", "2 - bad", "1 - really bad");
+
+        // Bind all fields to the view model properties
+        datePicker.valueProperty().bindBidirectional(viewModel.dateProperty());
+        Bindings.bindBidirectional(commentTextArea.textProperty(), viewModel.commentProperty());
+        difficultySlider.valueProperty().bindBidirectional(viewModel.difficultyProperty());
+        Bindings.bindBidirectional(totalTimeTextField.textProperty(), viewModel.totalTimeProperty());
+        Bindings.bindBidirectional(distanceTextField.textProperty(), viewModel.totalDistanceProperty());
+
+
+    }
 
     public void onCancelLogButtonClick(ActionEvent actionEvent) {
     }

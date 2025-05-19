@@ -1,5 +1,6 @@
 package at.technikumwien.tourplanner.viewmodel;
 
+import at.technikumwien.tourplanner.model.LogItem;
 import at.technikumwien.tourplanner.model.TourItem;
 import at.technikumwien.tourplanner.service.TourManager;
 import at.technikumwien.tourplanner.utils.Event;
@@ -11,14 +12,17 @@ public class MainViewModel {
     private final ViewTourViewModel viewTourViewModel;
     private final EditTourViewModel editTourViewModel;
     private final LogListViewModel logListViewModel;
+    private final EditLogViewModel editLogViewModel;
     private final SimpleStringProperty view = new SimpleStringProperty("viewTour");
 
-    public MainViewModel(TourManager tourManager, TourListViewModel tourListViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel, LogListViewModel logListViewModel) {
+    public MainViewModel(TourManager tourManager, TourListViewModel tourListViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel, LogListViewModel logListViewModel, EditLogViewModel editLogViewModel) {
         this.tourManager = tourManager;
         this.tourListViewModel = tourListViewModel;
         this.viewTourViewModel = viewTourViewModel;
         this.editTourViewModel = editTourViewModel;
         this.logListViewModel = logListViewModel;
+        this.editLogViewModel = editLogViewModel;
+
 
         tourListViewModel.addTourSelectedListener(evt -> {
             if (evt.getPropertyName().equals(Event.TOUR_SELECTED)) {
@@ -47,6 +51,14 @@ public class MainViewModel {
                 // Use the new loadTour method to update all properties at once
                 editTourViewModel.loadTour(tourToEdit);
                 setView("editTour");
+            }
+        });
+
+        logListViewModel.addCreateNewLogListener(evt -> {
+            if (evt.getPropertyName().equals(Event.EDIT_LOG)) {
+                LogItem logToEdit = (LogItem) evt.getNewValue();
+                editLogViewModel.loadLog(logToEdit);  // ⬅️ wir erstellen diese Methode gleich
+                setView("editLog");
             }
         });
     }

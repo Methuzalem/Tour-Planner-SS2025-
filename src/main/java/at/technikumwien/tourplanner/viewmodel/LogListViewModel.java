@@ -13,7 +13,7 @@ import java.beans.PropertyChangeSupport;
 
 public class LogListViewModel {
     private final LogManager logManager;
-    private final String today = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+    private final LocalDate today = LocalDate.now();
     private final PropertyChangeSupport logSelectedEvent = new PropertyChangeSupport(this);
     private final PropertyChangeSupport createLogEvent = new PropertyChangeSupport(this);
     private final ObservableList<LogItem> filteredLogs = FXCollections.observableArrayList();
@@ -22,7 +22,7 @@ public class LogListViewModel {
         this.logManager = logManager;
     }
 
-    public void addLogSelectedListener(PropertyChangeListener listener) {
+    public void onAddLogButtonClick(PropertyChangeListener listener) {
         logSelectedEvent.addPropertyChangeListener(listener);
     }
 

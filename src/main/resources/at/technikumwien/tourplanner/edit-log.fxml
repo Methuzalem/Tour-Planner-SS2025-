@@ -20,40 +20,31 @@
             <Label style="-fx-font-weight: bold;" text="Datum:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
             <DatePicker fx:id="datePicker" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-            <Label style="-fx-font-weight: bold;" text="Difficulty (1 = low - 10 = high):" GridPane.rowIndex="3" />
-            <Slider fx:id="difficultySlider" blockIncrement="1" majorTickUnit="1" max="10" min="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <!-- Comment -->
+            <Label style="-fx-font-weight: bold;" text="Comment:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <TextArea fx:id="commentTextArea" prefRowCount="3" promptText="Enter your comments to the Tour here" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
 
+            <!-- Difficulty -->
+            <Label style="-fx-font-weight: bold;" text="Difficulty (1 = low):" GridPane.rowIndex="2" />
+            <Slider fx:id="difficultySlider" blockIncrement="1" majorTickUnit="1" max="10" min="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
 
+            <!-- Total Time -->
+            <Label style="-fx-font-weight: bold;" text="Total Time:" GridPane.rowIndex="4" />
+            <TextField fx:id="totalTimeTextField" promptText="Enter your total time in h" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
-
-
-            <!-- Tour notes -->
-            <Label style="-fx-font-weight: bold;" text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <TextArea fx:id="tourDescriptionTextArea" prefRowCount="3" promptText="Enter tour description" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-
-
-
-            <!-- To location -->
-            <Label style="-fx-font-weight: bold;" text="To:" GridPane.rowIndex="4" />
-            <TextField fx:id="toTextField" promptText="Enter destination" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-
-            <!-- Transport type -->
-            <Label style="-fx-font-weight: bold;" text="Transport Type:" GridPane.rowIndex="5" />
-            <ComboBox fx:id="transportTypeComboBox" promptText="Select transport type" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
             <!-- Tour distance -->
-            <Label style="-fx-font-weight: bold;" text="Distance (km):" GridPane.rowIndex="6" />
-            <TextField fx:id="distanceTextField" promptText="Enter distance in kilometers" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <Label style="-fx-font-weight: bold;" text="Distance (km):" GridPane.rowIndex="5" />
+            <TextField fx:id="distanceTextField" promptText="Enter distance in kilometers" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
-            <!-- Estimated time -->
-            <Label style="-fx-font-weight: bold;" text="Estimated Time:" GridPane.rowIndex="7" />
-            <TextField fx:id="estimatedTimeTextField" promptText="Enter estimated time (e.g., 2h 30min)" GridPane.columnIndex="1" GridPane.rowIndex="7" />
 
-            <!-- Route information -->
-            <Label style="-fx-font-weight: bold;" text="Route Information:" GridPane.rowIndex="8" />
-            <TextArea fx:id="routeInfoTextArea" prefRowCount="3" promptText="Enter route information" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+            <!-- Transport type -->
+            <Label style="-fx-font-weight: bold;" text="Rating:" GridPane.rowIndex="6" />
+            <ComboBox fx:id="ratingComboBox" promptText="Select your Rating" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+
          <rowConstraints>
             <RowConstraints />
             <RowConstraints />

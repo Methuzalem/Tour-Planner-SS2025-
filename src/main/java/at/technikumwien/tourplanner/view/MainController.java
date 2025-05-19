@@ -21,13 +21,15 @@ public class MainController {
     private final EditTourViewModel editTourViewModel;
     private final TourListViewModel tourListViewModel;
     private final LogListViewModel logListViewModel;
+    private final EditLogViewModel editLogViewModel;
 
-    public MainController(MainViewModel mainViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel, TourListViewModel tourListViewModel, LogListViewModel logListViewModel) {
+    public MainController(MainViewModel mainViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel, TourListViewModel tourListViewModel, LogListViewModel logListViewModel, EditLogViewModel editLogViewModel) {
         this.mainViewModel = mainViewModel;
         this.viewTourViewModel = viewTourViewModel;
         this.editTourViewModel = editTourViewModel;
         this.tourListViewModel = tourListViewModel;
         this.logListViewModel = logListViewModel;
+        this.editLogViewModel = editLogViewModel;
     }
 
     @FXML
@@ -62,6 +64,9 @@ public class MainController {
             case "viewTour":
                 fxmlToLoad = "/at/technikumwien/tourplanner/view-tour.fxml";
                 break;
+            case "editLog":
+                fxmlToLoad = "/at/technikumwien/tourplanner/view-tour.fxml";
+                break;
         }
 
         if (fxmlToLoad != null) {
@@ -89,21 +94,39 @@ public class MainController {
 
     private void updateDynamicContent2() {
         dynamicContent2.getChildren().clear();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/at/technikumwien/tourplanner/log-list.fxml"));
+        String fxmlToLoad = null;
 
-            // Controller mit ViewModel setzen
-            loader.setControllerFactory(param -> {
-                if (param == LogListController.class) {
-                    return new LogListController(logListViewModel, tourListViewModel);  // <-- hier musst du logListViewModel vorher definieren
-                }
-                return null;
-            });
+        switch (mainViewModel.getView()) {
+            case "editLog":
+                fxmlToLoad = "/at/technikumwien/tourplanner/edit-log.fxml";
+                break;
+            case "viewTour":
+                fxmlToLoad = "/at/technikumwien/tourplanner/log-list.fxml";
+                break;
+            case "editTour":
+                fxmlToLoad = "/at/technikumwien/tourplanner/log-list.fxml";
+                break;
+        }
 
-            Node content = loader.load();
-            dynamicContent2.getChildren().add(content);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (fxmlToLoad != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlToLoad));
+
+                loader.setControllerFactory(param -> {
+                    if (param == EditLogController.class) {
+                        return new EditLogController(editLogViewModel);
+                    } else if (param == LogListController.class) {
+                        return new LogListController(logListViewModel, tourListViewModel);
+                    }
+                    return null;
+                });
+
+                Node content = loader.load();
+                dynamicContent2.getChildren().add(content);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
+
 }

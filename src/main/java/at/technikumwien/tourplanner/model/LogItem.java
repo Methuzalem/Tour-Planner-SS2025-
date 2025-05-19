@@ -1,36 +1,37 @@
 package at.technikumwien.tourplanner.model;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 public record LogItem(
         String logId,
         String tourId,
-        String date,
-        Integer difficulty,
+        LocalDate date,
+        Double difficulty,
         String comment,
-        Double totalDistance,
+        String totalDistance,
         String totalTime,
         Integer rating) {
 
 
-    public LogItem(String date){this(UUID.randomUUID().toString(), date, 0, "", 0.00, "", 0);}
+    public LogItem(LocalDate date){this(UUID.randomUUID().toString(), date, 0.00, "", "0.00", "", 0);}
 
     public LogItem(
             String tourId,
-            String date,
-            Integer difficulty,
+            LocalDate date,
+            Double difficulty,
             String comment,
-            Double totalDistance,
+            String totalDistance,
             String totalTime,
             Integer rating) {
         this(UUID.randomUUID().toString(), tourId, date, difficulty, comment, totalDistance, totalTime, rating);
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public Integer getDifficulty() {
+    public Double getDifficulty() {
         return difficulty;
     }
 
@@ -50,7 +51,7 @@ public record LogItem(
         return totalTime;
     }
 
-    public Double getTotalDistance() {
+    public String getTotalDistance() {
         return totalDistance;
     }
 }
