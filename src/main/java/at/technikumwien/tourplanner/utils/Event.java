@@ -6,6 +6,5 @@ public class Event {
     public static final String EDIT_TOUR = "editTour";
     public static final String VALIDATION_ERROR = "validationError";
     public static final String EDIT_LOG = "editLog";
-    public static final String SAVE_LOG = "saveLog";
     public static final String CANCEL_LOG = "cancelLog";
 }

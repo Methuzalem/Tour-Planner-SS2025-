@@ -5,6 +5,7 @@ import at.technikumwien.tourplanner.model.LogItem;
 import at.technikumwien.tourplanner.service.LogManager;
 import at.technikumwien.tourplanner.utils.Event;
 import javafx.beans.property.*;
+import javafx.scene.control.Alert;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -14,7 +15,6 @@ public class EditLogViewModel {
     private final LogManager logManager;
     private final PropertyChangeSupport cancelLogEditEvent = new PropertyChangeSupport(this);
     private final PropertyChangeSupport createNewLogEvent = new PropertyChangeSupport(this);
-    private final PropertyChangeSupport validationLogErrorEvent = new PropertyChangeSupport(this);
 
     //Properties for all Log fields
     private final SimpleStringProperty logId = new SimpleStringProperty(null);
@@ -75,23 +75,57 @@ public class EditLogViewModel {
     }
 
     public void createNewLog() {
+        LocalDate logDate = date.get();
+        double diff = difficulty.get();
+        String time = totalTime.get();
+        String distance = totalDistance.get();
+
+        if (logDate == null) {
+            showAlert("Invalid Input", "Please enter a date.");
+            return;
+        }
+
+        if (time == null || time.isBlank()) {
+            showAlert("Invalid Input", "Please enter your total time!");
+            return;
+        }
+
+        if (distance == null || distance.isBlank()) {
+            showAlert("Invalid Input", "Please enter a total distance.");
+            return;
+        }
+
+        if (comment.get() == null){
+            comment.set("No comment for this Log!");
+        }
+
+        if (rating.get() == null){
+            rating.set("No rating for this Log!");
+        }
 
         LogItem logToSave = new LogItem(
                 logId.get(),
                 tourId.get(),
-                date.get(),
-                difficulty.get(),
+                logDate,
+                diff,
                 comment.get(),
-                totalTime.get(),
-                totalDistance.get(),
-                rating.get()
+                time,
+                distance,
+                rating.get()  // darf 0 sein
         );
 
-        logManager.saveLog(logToSave); // oder .add() bei dir
+        logManager.saveLog(logToSave);
         cancelLogEditEvent.firePropertyChange(Event.CANCEL_LOG, null, null);
         resetFormFields();
     }
 
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(title);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 
     public void prepareNewLogForTour(String id) {
         this.tourId.set(id);
