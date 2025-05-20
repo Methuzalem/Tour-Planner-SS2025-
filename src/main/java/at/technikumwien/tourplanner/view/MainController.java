@@ -54,7 +54,7 @@ public class MainController {
 
         // if log is created refresh list
         logManager.addCreateLogListener(evt -> {
-            if (evt.getPropertyName().equals(Event.SAVE_LOG)) {
+            if (evt.getPropertyName().equals(Event.REFRESH_LOG)) {
                 LogItem logItem = (LogItem) evt.getNewValue();
                 logListViewModel.loadLogsForTour(logItem.tourId());
             }

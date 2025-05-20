@@ -1,7 +1,6 @@
 package at.technikumwien.tourplanner.service;
 
 import at.technikumwien.tourplanner.model.LogItem;
-import at.technikumwien.tourplanner.model.TourItem;
 import at.technikumwien.tourplanner.utils.Event;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -54,13 +53,13 @@ public class LogManager {
             for (int i = 0; i < logList.size(); i++) {
                 if (logList.get(i).logId().equals(logItem.logId())) {
                     logList.set(i, logItem);
-                    createNewLogEvent.firePropertyChange(Event.SAVE_LOG, null, logItem);
+                    createNewLogEvent.firePropertyChange(Event.REFRESH_LOG, null, logItem);
                     return;
                 }
             }
         }
 
-        createNewLogEvent.firePropertyChange(Event.SAVE_LOG, null, logItem);
+        createNewLogEvent.firePropertyChange(Event.REFRESH_LOG, null, logItem);
     }
 
     public void deleteLog(LogItem logItem) {
@@ -70,7 +69,7 @@ public class LogManager {
         for (int i = 0; i < logList.size(); i++) {
             if (logList.get(i).logId().equals(logItem.logId())) {
                 logList.remove(i);
-                createNewLogEvent.firePropertyChange(Event.SAVE_LOG, null, logItem);
+                createNewLogEvent.firePropertyChange(Event.REFRESH_LOG, null, logItem);
             }
         }
     }

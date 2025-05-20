@@ -69,17 +69,11 @@ public class EditLogViewModel {
         cancelLogEditEvent.addPropertyChangeListener(listener);
     }
 
-
     public void createNewLog() {
         LocalDate logDate = date.get();
         double diff = difficulty.get();
         String time = totalTime.get();
         String distance = totalDistance.get();
-
-        if (tourId.get() == null) {
-            showAlert("Invalid Input", "Please select a Tour!");
-            return;
-        }
 
         if (logDate == null) {
             showAlert("Invalid Input", "Please enter a date.");
@@ -114,7 +108,6 @@ public class EditLogViewModel {
                 distance,
                 rating.get()
         );
-
         logManager.saveLog(logToSave);
         cancelLogEditEvent.firePropertyChange(Event.CANCEL_LOG, null, logToSave);
         resetFormFields();

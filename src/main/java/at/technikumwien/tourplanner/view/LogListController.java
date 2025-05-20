@@ -39,7 +39,6 @@ public class LogListController {
                 }
             }
         });
-
         //get selected item
         logList.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newItem) -> {
             if (newItem != null) {
