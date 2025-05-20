@@ -13,11 +13,7 @@ public record LogItem(
         String totalTime,
         String rating) {
 
-        private static final LocalDate dateDummy = null;
-
-    public LogItem(String tourID){this(UUID.randomUUID().toString(), tourID, dateDummy, 0.00, "", "0.00", "", "0");}
-
-    public LogItem(LocalDate date){this(UUID.randomUUID().toString(), "", date, 0.00, "", "0.00", "", "0");}
+    public LogItem(LocalDate date){this(null, "", date, 0.00, "", "0.00", "", "0");}
 
     public LogItem(
             String tourId,
@@ -57,4 +53,6 @@ public record LogItem(
     public String getTotalDistance() {
         return totalDistance;
     }
+
+    public String getLogId() { return logId; }
 }

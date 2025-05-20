@@ -58,14 +58,18 @@ public class MainViewModel {
 
         logListViewModel.addCreateNewLogListener(evt -> {
             TourItem currentTour = viewTourViewModel.currentTourProperty().get();
-
-            if (evt.getPropertyName().equals(Event.EDIT_LOG)) {
-                    LogItem logToEdit = (LogItem) evt.getNewValue();
-                    editLogViewModel.prepareNewLogForTour(currentTour.id());
-                    editLogViewModel.loadLog(logToEdit);
-            } else {
-                    LogItem logToEdit = (LogItem) evt.getNewValue();
-                    editLogViewModel.loadLog(logToEdit);
+            if (currentTour == null) {
+                editLogViewModel.showAlert("Invalid Input", "Please select a tour first");
+                return;
+            }
+            else if (evt.getPropertyName().equals(Event.CREATE_LOG)) {
+                LogItem newLog = (LogItem) evt.getNewValue();
+                editLogViewModel.loadLog(newLog);
+                editLogViewModel.prepareNewLogForTour(currentTour.id());
+            }
+            else if (evt.getPropertyName().equals(Event.EDIT_LOG)) {
+                LogItem existingLog = (LogItem) evt.getNewValue();
+                editLogViewModel.loadLog(existingLog);
             }
             setView("editLog");
         });
@@ -90,5 +94,4 @@ public class MainViewModel {
     private void setView(String view) {
         this.view.set(view);
     }
-
 }

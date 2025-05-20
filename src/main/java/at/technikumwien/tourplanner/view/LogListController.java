@@ -35,6 +35,13 @@ public class LogListController {
                 }
             }
         });
+
+        //get selected item
+        logList.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newItem) -> {
+            if (newItem != null) {
+                logListViewModel.selectedLogProperty().set(newItem);
+            }
+        });
     }
 
     @FXML
@@ -42,7 +49,9 @@ public class LogListController {
         this.logListViewModel.createNewLog();
     }
 
+    @FXML
     public void onEditLogButtonClick(ActionEvent actionEvent) {
+        this.logListViewModel.editLog();
     }
 
     public void onDeleteLogButtonClick(ActionEvent actionEvent) {

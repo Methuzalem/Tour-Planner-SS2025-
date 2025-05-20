@@ -39,6 +39,8 @@ public class EditLogViewModel {
 
 
     public void loadLog(LogItem logItem) {
+        logId.set(logItem.getLogId());
+        tourId.set(logItem.getTourId());
         date.set(logItem.getDate());
         comment.set(logItem.getComment());
         difficulty.set(logItem.getDifficulty());
@@ -70,12 +72,16 @@ public class EditLogViewModel {
     }
 
 
-
     public void createNewLog() {
         LocalDate logDate = date.get();
         double diff = difficulty.get();
         String time = totalTime.get();
         String distance = totalDistance.get();
+
+        if (tourId.get() == null) {
+            showAlert("Invalid Input", "Please select a Tour!");
+            return;
+        }
 
         if (logDate == null) {
             showAlert("Invalid Input", "Please enter a date.");
@@ -116,7 +122,8 @@ public class EditLogViewModel {
         resetFormFields();
     }
 
-    private void showAlert(String title, String message) {
+
+    public void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText(title);

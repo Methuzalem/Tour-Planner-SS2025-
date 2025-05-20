@@ -1,6 +1,7 @@
 package at.technikumwien.tourplanner.service;
 
 import at.technikumwien.tourplanner.model.LogItem;
+import at.technikumwien.tourplanner.model.TourItem;
 import at.technikumwien.tourplanner.utils.Event;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -8,6 +9,7 @@ import javafx.collections.ObservableList;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class LogManager {
     private final PropertyChangeSupport createNewLogEvent = new PropertyChangeSupport(this);
@@ -34,7 +36,30 @@ public class LogManager {
     }
 
     public void saveLog(LogItem logItem) {
-        logList.add(logItem);
+        if (logItem.logId() == null) {
+            String newId = UUID.randomUUID().toString();
+            LogItem newItem = new LogItem(
+                    newId,
+                    logItem.tourId(),
+                    logItem.date(),
+                    logItem.difficulty(),
+                    logItem.comment(),
+                    logItem.totalDistance(),
+                    logItem.totalTime(),
+                    logItem.rating()
+            );
+            logList.add(newItem);
+        } else {
+            //update if existing
+            for (int i = 0; i < logList.size(); i++) {
+                if (logList.get(i).logId().equals(logItem.logId())) {
+                    logList.set(i, logItem);
+                    createNewLogEvent.firePropertyChange(Event.SAVE_LOG, null, logItem);
+                    return;
+                }
+            }
+        }
+
         createNewLogEvent.firePropertyChange(Event.SAVE_LOG, null, logItem);
     }
 }
