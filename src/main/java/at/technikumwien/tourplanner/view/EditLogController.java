@@ -31,13 +31,17 @@ public class EditLogController {
         difficultySlider.valueProperty().bindBidirectional(viewModel.difficultyProperty());
         Bindings.bindBidirectional(totalTimeTextField.textProperty(), viewModel.totalTimeProperty());
         Bindings.bindBidirectional(distanceTextField.textProperty(), viewModel.totalDistanceProperty());
-
-
+        ratingComboBox.valueProperty().bindBidirectional(viewModel.ratingProperty());
     }
 
-    public void onCancelLogButtonClick(ActionEvent actionEvent) {
+    @FXML
+    public void onCancelLogButtonClick() {
+            viewModel.cancelEditLog();
     }
 
-    public void onSaveLogButtonClick(ActionEvent actionEvent) {
+    @FXML
+    public void onSaveLogButtonClick() {
+        viewModel.createNewLog();
     }
+
 }

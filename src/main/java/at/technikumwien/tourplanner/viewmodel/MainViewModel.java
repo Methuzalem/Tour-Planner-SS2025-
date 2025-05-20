@@ -55,10 +55,26 @@ public class MainViewModel {
         });
 
         logListViewModel.addCreateNewLogListener(evt -> {
+            TourItem currentTour = viewTourViewModel.currentTourProperty().get();
+
             if (evt.getPropertyName().equals(Event.EDIT_LOG)) {
-                LogItem logToEdit = (LogItem) evt.getNewValue();
-                editLogViewModel.loadLog(logToEdit);  // ⬅️ wir erstellen diese Methode gleich
+                    editLogViewModel.prepareNewLogForTour(currentTour.id());
+                } else {
+                    LogItem logToEdit = (LogItem) evt.getNewValue();
+                    editLogViewModel.loadLog(logToEdit);
+                }
                 setView("editLog");
+        });
+
+        editLogViewModel.addCancelLogEditListener(evt -> {
+            if (evt.getPropertyName().equals(Event.CANCEL_LOG)) {
+                setView("viewTour");
+            }
+        });
+
+        editLogViewModel.addCreateLogListener(evt -> {
+            if (evt.getPropertyName().equals(Event.EDIT_TOUR)) {
+                setView("viewTour");
             }
         });
     }

@@ -79,6 +79,8 @@ public class MainController {
                         return new ViewTourController(viewTourViewModel);
                     } else if( controllerClass == EditTourController.class) {
                         return new EditTourController(editTourViewModel);
+                    } else if (controllerClass == LogListController.class) {
+                        return new LogListController(logListViewModel);
                     }
                     // Add more controller types as needed
                     return null;
@@ -116,7 +118,7 @@ public class MainController {
                     if (param == EditLogController.class) {
                         return new EditLogController(editLogViewModel);
                     } else if (param == LogListController.class) {
-                        return new LogListController(logListViewModel, tourListViewModel);
+                        return new LogListController(logListViewModel);
                     }
                     return null;
                 });

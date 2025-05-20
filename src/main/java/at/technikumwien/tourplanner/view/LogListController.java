@@ -13,11 +13,10 @@ public class LogListController {
     private ListView<LogItem> logList;
 
     private final LogListViewModel logListViewModel;
-    private final TourListViewModel tourListViewModel;
 
-    public LogListController(LogListViewModel logListViewModel, TourListViewModel tourListViewModel) {
+
+    public LogListController(LogListViewModel logListViewModel) {
         this.logListViewModel = logListViewModel;
-        this.tourListViewModel = tourListViewModel;
     }
 
     @FXML
