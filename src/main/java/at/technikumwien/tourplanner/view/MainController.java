@@ -1,6 +1,9 @@
 package at.technikumwien.tourplanner.view;
 
+import at.technikumwien.tourplanner.model.LogItem;
 import at.technikumwien.tourplanner.model.TourItem;
+import at.technikumwien.tourplanner.service.LogManager;
+import at.technikumwien.tourplanner.utils.Event;
 import at.technikumwien.tourplanner.viewmodel.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,14 +25,16 @@ public class MainController {
     private final TourListViewModel tourListViewModel;
     private final LogListViewModel logListViewModel;
     private final EditLogViewModel editLogViewModel;
+    private final LogManager logManager;
 
-    public MainController(MainViewModel mainViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel, TourListViewModel tourListViewModel, LogListViewModel logListViewModel, EditLogViewModel editLogViewModel) {
+    public MainController(MainViewModel mainViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel, TourListViewModel tourListViewModel, LogListViewModel logListViewModel, EditLogViewModel editLogViewModel, LogManager logManager) {
         this.mainViewModel = mainViewModel;
         this.viewTourViewModel = viewTourViewModel;
         this.editTourViewModel = editTourViewModel;
         this.tourListViewModel = tourListViewModel;
         this.logListViewModel = logListViewModel;
         this.editLogViewModel = editLogViewModel;
+        this.logManager = logManager;
     }
 
     @FXML
@@ -44,6 +49,14 @@ public class MainController {
         tourListViewModel.addTourSelectedListener(evt -> {
             if (evt.getNewValue() instanceof TourItem tour) {
                 logListViewModel.loadLogsForTour(tour.id());
+            }
+        });
+
+        // if log is created refresh list
+        logManager.addCreateLogListener(evt -> {
+            if (evt.getPropertyName().equals(Event.SAVE_LOG)) {
+                LogItem logItem = (LogItem) evt.getNewValue();
+                logListViewModel.loadLogsForTour(logItem.tourId());
             }
         });
         

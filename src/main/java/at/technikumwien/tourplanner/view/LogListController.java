@@ -2,7 +2,6 @@ package at.technikumwien.tourplanner.view;
 
 import at.technikumwien.tourplanner.model.LogItem;
 import at.technikumwien.tourplanner.viewmodel.LogListViewModel;
-import at.technikumwien.tourplanner.viewmodel.TourListViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
@@ -39,7 +38,7 @@ public class LogListController {
     }
 
     @FXML
-    private void onAddLogButtonClick() {
+    private void onCreateLogButtonClick() {
         this.logListViewModel.createNewLog();
     }
 

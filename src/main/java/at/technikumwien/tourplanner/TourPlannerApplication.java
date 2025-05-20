@@ -36,20 +36,20 @@ public class TourPlannerApplication extends Application {
         editTourViewModel = new EditTourViewModel(tourManager);
         logListViewModel = new LogListViewModel(logManager);
         editLogViewModel = new EditLogViewModel(logManager);
-        mainViewModel = new MainViewModel(tourManager, tourListViewModel, viewTourViewModel, editTourViewModel, logListViewModel, editLogViewModel);
+        mainViewModel = new MainViewModel(tourManager, tourListViewModel, viewTourViewModel, editTourViewModel, logListViewModel, editLogViewModel, logManager);
     }
 
     @Override
     public void start(Stage stage) throws IOException {
-        Parent root = loadRootNode(mainViewModel, tourListViewModel, viewTourViewModel, editTourViewModel, logListViewModel, editLogViewModel);
+        Parent root = loadRootNode(mainViewModel, tourListViewModel, viewTourViewModel, editTourViewModel, logListViewModel, editLogViewModel, logManager);
         showStage(stage, root);
     }
 
-    public static Parent loadRootNode(MainViewModel mainViewModel, TourListViewModel tourListViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel, LogListViewModel logListViewModel, EditLogViewModel editLogViewModel) throws IOException {
+    public static Parent loadRootNode(MainViewModel mainViewModel, TourListViewModel tourListViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel, LogListViewModel logListViewModel, EditLogViewModel editLogViewModel, LogManager logManager) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(TourPlannerApplication.class.getResource("main-view.fxml"));
         fxmlLoader.setControllerFactory(controllerClass -> {
             if (controllerClass == MainController.class) {
-                return new MainController(mainViewModel, viewTourViewModel, editTourViewModel, tourListViewModel, logListViewModel, editLogViewModel);
+                return new MainController(mainViewModel, viewTourViewModel, editTourViewModel, tourListViewModel, logListViewModel, editLogViewModel, logManager);
             } else if (controllerClass == TourListController.class) {
                 return new TourListController(tourListViewModel);
             } else if (controllerClass == ViewTourController.class) {

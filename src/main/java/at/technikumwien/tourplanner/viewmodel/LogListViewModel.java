@@ -6,7 +6,6 @@ import at.technikumwien.tourplanner.utils.Event;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -22,10 +21,6 @@ public class LogListViewModel {
         this.logManager = logManager;
     }
 
-    public void onAddLogButtonClick(PropertyChangeListener listener) {
-        logSelectedEvent.addPropertyChangeListener(listener);
-    }
-
     public void addCreateNewLogListener(PropertyChangeListener listener) {
         createLogEvent.addPropertyChangeListener(listener);
     }
@@ -39,7 +34,7 @@ public class LogListViewModel {
     }
 
     public ObservableList<LogItem> getLogList() {
-        return logManager.getTourList();
+        return logManager.getLogList();
     }
 
     public void createNewLog() {

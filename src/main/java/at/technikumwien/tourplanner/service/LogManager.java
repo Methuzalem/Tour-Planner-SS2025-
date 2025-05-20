@@ -1,12 +1,16 @@
 package at.technikumwien.tourplanner.service;
 
 import at.technikumwien.tourplanner.model.LogItem;
+import at.technikumwien.tourplanner.utils.Event;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.time.LocalDate;
 
 public class LogManager {
+    private final PropertyChangeSupport createNewLogEvent = new PropertyChangeSupport(this);
 
     LocalDate datum1 = LocalDate.of(2025, 11, 15);
     LocalDate datum2 = LocalDate.of(2025, 11, 16);
@@ -21,11 +25,16 @@ public class LogManager {
     );
 
     // read the list of tours
-    public ObservableList<LogItem> getTourList() {
+    public ObservableList<LogItem> getLogList() {
         return logList;
+    }
+
+    public void addCreateLogListener(PropertyChangeListener listener) {
+        createNewLogEvent.addPropertyChangeListener(listener);
     }
 
     public void saveLog(LogItem logItem) {
         logList.add(logItem);
+        createNewLogEvent.firePropertyChange(Event.SAVE_LOG, null, logItem);
     }
 }

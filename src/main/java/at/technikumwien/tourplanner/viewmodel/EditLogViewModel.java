@@ -14,7 +14,6 @@ import java.time.LocalDate;
 public class EditLogViewModel {
     private final LogManager logManager;
     private final PropertyChangeSupport cancelLogEditEvent = new PropertyChangeSupport(this);
-    private final PropertyChangeSupport createNewLogEvent = new PropertyChangeSupport(this);
 
     //Properties for all Log fields
     private final SimpleStringProperty logId = new SimpleStringProperty(null);
@@ -70,9 +69,7 @@ public class EditLogViewModel {
         cancelLogEditEvent.addPropertyChangeListener(listener);
     }
 
-    public void addCreateLogListener(PropertyChangeListener listener) {
-        createNewLogEvent.addPropertyChangeListener(listener);
-    }
+
 
     public void createNewLog() {
         LocalDate logDate = date.get();
@@ -111,11 +108,11 @@ public class EditLogViewModel {
                 comment.get(),
                 time,
                 distance,
-                rating.get()  // darf 0 sein
+                rating.get()
         );
 
         logManager.saveLog(logToSave);
-        cancelLogEditEvent.firePropertyChange(Event.CANCEL_LOG, null, null);
+        cancelLogEditEvent.firePropertyChange(Event.CANCEL_LOG, null, logToSave);
         resetFormFields();
     }
 
