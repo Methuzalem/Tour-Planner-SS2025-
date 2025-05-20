@@ -4,8 +4,12 @@ import at.technikumwien.tourplanner.model.LogItem;
 import at.technikumwien.tourplanner.viewmodel.LogListViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+
+import java.util.Optional;
 
 public class LogListController {
     @FXML
@@ -54,6 +58,28 @@ public class LogListController {
         this.logListViewModel.editLog();
     }
 
+    @FXML
     public void onDeleteLogButtonClick(ActionEvent actionEvent) {
+        if (logListViewModel.selectedLogProperty().get() == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Invalid Log Selection");
+            alert.setContentText("Please select a log to delete it");
+            alert.showAndWait();
+            return;
+        }
+
+        // Show a confirmation dialog
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmDialog.setTitle("Delete Log");
+        confirmDialog.setHeaderText("Delete Log");
+        confirmDialog.setContentText("Are you sure you want to delete this log? This action cannot be undone.");
+
+        // Handle the user's response
+        Optional<ButtonType> result = confirmDialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            // User confirmed, proceed with deletion
+            logListViewModel.deleteLog();
+        }
     }
 }

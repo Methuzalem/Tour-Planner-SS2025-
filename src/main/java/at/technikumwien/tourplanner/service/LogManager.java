@@ -62,4 +62,16 @@ public class LogManager {
 
         createNewLogEvent.firePropertyChange(Event.SAVE_LOG, null, logItem);
     }
+
+    public void deleteLog(LogItem logItem) {
+        if (logItem == null) {
+            return;
+        }
+        for (int i = 0; i < logList.size(); i++) {
+            if (logList.get(i).logId().equals(logItem.logId())) {
+                logList.remove(i);
+                createNewLogEvent.firePropertyChange(Event.SAVE_LOG, null, logItem);
+            }
+        }
+    }
 }

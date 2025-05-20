@@ -56,4 +56,8 @@ public class LogListViewModel {
     public ObjectProperty<LogItem> selectedLogProperty() {
         return selectedLog;
     }
+
+    public void deleteLog() {
+        logManager.deleteLog(selectedLog.get());
+    }
 }

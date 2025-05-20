@@ -28,8 +28,6 @@ public class EditLogViewModel {
     public EditLogViewModel(LogManager logManager) {this.logManager = logManager;}
 
     // Property getters
-    public SimpleStringProperty logIdProperty() { return logId; }
-    public SimpleStringProperty tourIdProperty() { return tourId; }
     public ObjectProperty<LocalDate> dateProperty() { return date; }
     public StringProperty commentProperty() { return comment; }
     public DoubleProperty difficultyProperty() { return difficulty; }
