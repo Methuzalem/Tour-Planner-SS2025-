@@ -53,6 +53,7 @@ public class MainViewModel {
                 // Use the new loadTour method to update all properties at once
                 editTourViewModel.loadTour(tourToEdit);
                 setView("editTour");
+                System.out.println("Edit Tour: " + tourToEdit.id());
             }
         });
 
