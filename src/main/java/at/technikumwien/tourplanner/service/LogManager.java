@@ -43,8 +43,8 @@ public class LogManager {
                     logItem.date(),
                     logItem.difficulty(),
                     logItem.comment(),
-                    logItem.totalDistance(),
                     logItem.totalTime(),
+                    logItem.totalDistance(),
                     logItem.rating()
             );
             logList.add(newItem);

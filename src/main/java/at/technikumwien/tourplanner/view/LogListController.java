@@ -54,6 +54,15 @@ public class LogListController {
 
     @FXML
     public void onEditLogButtonClick(ActionEvent actionEvent) {
+        if (logListViewModel.selectedLogProperty().get() == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("NO Log Selection");
+            alert.setContentText("Please select a log to edit!");
+            alert.showAndWait();
+            return;
+        }
+
         this.logListViewModel.editLog();
     }
 

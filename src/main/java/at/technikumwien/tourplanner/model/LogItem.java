@@ -9,8 +9,8 @@ public record LogItem(
         LocalDate date,
         Double difficulty,
         String comment,
-        String totalDistance,
         String totalTime,
+        String totalDistance,
         String rating) {
 
     public LogItem(LocalDate date){this(null, "", date, 0.00, "", "0.00", "", "0");}
