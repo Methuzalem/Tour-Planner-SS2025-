@@ -11,10 +11,12 @@ public record TourItem(
         String transportType,
         Double distance,
         String estimatedTime,
-        String routeInformation) {
+        String routeInformation,
+        String imageUrl
+        ) {
     
     public TourItem(String name) {
-        this(UUID.randomUUID().toString(), name, "", "", "", "", 0.0, "", "");
+        this(UUID.randomUUID().toString(), name, "", "", "", "", 0.0, "", "", "");
     }
     
     // Constructor without ID for creating new tours (ID will be assigned by the TourManager)
@@ -26,8 +28,10 @@ public record TourItem(
             String transportType, 
             Double distance, 
             String estimatedTime, 
-            String routeInformation) {
-        this(UUID.randomUUID().toString(), name, description, from, to, transportType, distance, estimatedTime, routeInformation);
+            String routeInformation,
+            String imageUrl
+            ) {
+        this(UUID.randomUUID().toString(), name, description, from, to, transportType, distance, estimatedTime, routeInformation, imageUrl);
     }
 
     //Constructor with ID to be able to hardcode the relationships between logs and tours
@@ -40,7 +44,9 @@ public record TourItem(
             String transportType,
             Double distance,
             String estimatedTime,
-            String routeInformation) {
+            String routeInformation,
+            String imageUrl
+            ) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -50,6 +56,7 @@ public record TourItem(
         this.distance = distance;
         this.estimatedTime = estimatedTime;
         this.routeInformation = routeInformation;
+        this.imageUrl = imageUrl;
     }
     
     @Override
