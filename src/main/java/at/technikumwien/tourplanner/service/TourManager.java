@@ -53,21 +53,6 @@ public class TourManager {
         }
     }
     
-    // Convenience method for adding a brand new tour
-    public TourItem createNewTour(TourItem tourWithoutId) {
-        return saveTour(tourWithoutId);
-    }
-    
-    // Find a tour by ID
-    public TourItem findTourById(String id) {
-        for (TourItem tour : tourList) {
-            if (tour.id().equals(id)) {
-                return tour;
-            }
-        }
-        return null;
-    }
-    
     // Delete a tour by ID
     public boolean deleteTour(String id) {
         for (int i = 0; i < tourList.size(); i++) {
