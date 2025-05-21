@@ -11,6 +11,8 @@ import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainController {
     @FXML
@@ -26,6 +28,9 @@ public class MainController {
     private final LogListViewModel logListViewModel;
     private final EditLogViewModel editLogViewModel;
     private final LogManager logManager;
+
+    private final Map<String, Node> contentCache = new HashMap<>();
+    private final Map<String, Node> content2Cache = new HashMap<>();
 
     public MainController(MainViewModel mainViewModel, ViewTourViewModel viewTourViewModel, EditTourViewModel editTourViewModel, TourListViewModel tourListViewModel, LogListViewModel logListViewModel, EditLogViewModel editLogViewModel, LogManager logManager) {
         this.mainViewModel = mainViewModel;
@@ -65,83 +70,65 @@ public class MainController {
         updateDynamicContent2();
     }
 
-    private void updateDynamicContent() {
-        dynamicContent.getChildren().clear();
-        String fxmlToLoad = null;
-
-        // Determine which FXML file to load based on the current state of the view model using switch-case
-        switch (mainViewModel.getView()) {
-            case "editTour":
-                fxmlToLoad = "/at/technikumwien/tourplanner/edit-tour.fxml";
-                break;
-            case "viewTour":
-                fxmlToLoad = "/at/technikumwien/tourplanner/view-tour.fxml";
-                break;
-            case "editLog":
-                fxmlToLoad = "/at/technikumwien/tourplanner/view-tour.fxml";
-                break;
+    private Node loadAndCacheContent(String fxmlPath, Map<String, Node> cache) {
+        if (cache.containsKey(fxmlPath)) {
+            return cache.get(fxmlPath);
         }
 
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            loader.setControllerFactory(controllerClass -> {
+                if (controllerClass == ViewTourController.class) {
+                    return new ViewTourController(viewTourViewModel);
+                } else if (controllerClass == EditTourController.class) {
+                    return new EditTourController(editTourViewModel);
+                } else if (controllerClass == LogListController.class) {
+                    return new LogListController(logListViewModel);
+                } else if (controllerClass == EditLogController.class) {
+                    return new EditLogController(editLogViewModel);
+                }
+                return null;
+            });
+
+            Node content = loader.load();
+            cache.put(fxmlPath, content);
+            return content;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void updateDynamicContent() {
+        dynamicContent.getChildren().clear();
+        String fxmlToLoad = switch (mainViewModel.getView()) {
+            case "editTour" -> "/at/technikumwien/tourplanner/edit-tour.fxml";
+            case "viewTour", "editLog" -> "/at/technikumwien/tourplanner/view-tour.fxml";
+            default -> null;
+        };
+
         if (fxmlToLoad != null) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlToLoad));
-
-                // Set a controller factory that provides the appropriate controller instances
-                loader.setControllerFactory(controllerClass -> {
-                    if (controllerClass == ViewTourController.class) {
-                        return new ViewTourController(viewTourViewModel);
-                    } else if( controllerClass == EditTourController.class) {
-                        return new EditTourController(editTourViewModel);
-                    } else if (controllerClass == LogListController.class) {
-                        return new LogListController(logListViewModel);
-                    }
-                    // Add more controller types as needed
-                    return null;
-                });
-
-                Node content = loader.load();
+            Node content = loadAndCacheContent(fxmlToLoad, contentCache);
+            if (content != null) {
                 dynamicContent.getChildren().add(content);
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }
 
     private void updateDynamicContent2() {
         dynamicContent2.getChildren().clear();
-        String fxmlToLoad = null;
-
-        switch (mainViewModel.getView()) {
-            case "editLog":
-                fxmlToLoad = "/at/technikumwien/tourplanner/edit-log.fxml";
-                break;
-            case "viewTour":
-                fxmlToLoad = "/at/technikumwien/tourplanner/log-list.fxml";
-                break;
-            case "editTour":
-                fxmlToLoad = "/at/technikumwien/tourplanner/log-list.fxml";
-                break;
-        }
+        String fxmlToLoad = switch (mainViewModel.getView()) {
+            case "editLog" -> "/at/technikumwien/tourplanner/edit-log.fxml";
+            case "viewTour", "editTour" -> "/at/technikumwien/tourplanner/log-list.fxml";
+            default -> null;
+        };
 
         if (fxmlToLoad != null) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlToLoad));
-
-                loader.setControllerFactory(param -> {
-                    if (param == EditLogController.class) {
-                        return new EditLogController(editLogViewModel);
-                    } else if (param == LogListController.class) {
-                        return new LogListController(logListViewModel);
-                    }
-                    return null;
-                });
-
-                Node content = loader.load();
+            Node content = loadAndCacheContent(fxmlToLoad, content2Cache);
+            if (content != null) {
                 dynamicContent2.getChildren().add(content);
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }
-
 }
