@@ -20,6 +20,7 @@ public class TourManager {
 
     // create or update a tour
     public TourItem saveTour(TourItem tour) {
+        System.out.println("Saving tour: " + tour.id());
         // If the tour has no ID, it's a new tour
         if (tour.id() == null) {
             String newId = UUID.randomUUID().toString();
@@ -46,6 +47,7 @@ public class TourManager {
             }
             // If we get here, we didn't find a matching tour
             // This shouldn't happen in normal operation, but we'll add the tour anyway
+            System.out.println("Tour with ID " + tour.id() + " not found, adding as new tour.");
             tourList.add(tour);
             return tour;
         }

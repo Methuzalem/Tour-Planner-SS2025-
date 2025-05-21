@@ -30,7 +30,7 @@ public class EditTourController {
             if (!distanceTextField.getText().trim().isEmpty()) {
                 Double.parseDouble(distanceTextField.getText());
             }
-            viewModel.createNewTour();
+            viewModel.saveTour();
         } catch (NumberFormatException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Input Error");
