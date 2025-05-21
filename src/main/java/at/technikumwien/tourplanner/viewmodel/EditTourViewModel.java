@@ -99,8 +99,8 @@ public class EditTourViewModel {
             description.get(),
             from.get(),
             to.get(),
-            transportType.get(),
             distance.get(),
+            transportType.get(),
             estimatedTime.get(),
             routeInformation.get()
         );

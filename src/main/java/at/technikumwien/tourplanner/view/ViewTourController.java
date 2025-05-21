@@ -8,7 +8,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
+import java.io.File;
 import java.util.Optional;
 
 public class ViewTourController {
@@ -22,6 +25,7 @@ public class ViewTourController {
     @FXML private Label routeInformationLabel;
     @FXML private Button editButton;
     @FXML private Button deleteButton;
+    @FXML private ImageView tourImageView;
     
     private final ViewTourViewModel viewModel;
 
@@ -111,6 +115,19 @@ public class ViewTourController {
                 viewModel.currentTourProperty()
             )
         );
+
+        // Bind the image view to the tour's image URL
+        viewModel.currentTourProperty().addListener((observable, oldValue, newValue) -> {
+            tourImageView.setImage(null);
+            if (newValue != null && newValue.imageUrl() != null && !newValue.imageUrl().isEmpty()) {
+                System.out.println("Loading image from: " + newValue.imageUrl());
+                Image image = new Image(newValue.imageUrl(), false); // synchronous load
+                if (image.isError()) {
+                    System.err.println("Image load error: " + image.getException());
+                }
+                tourImageView.setImage(image);
+            }
+        });
         
         // Disable the buttons if no tour is selected
         editButton.disableProperty().bind(Bindings.isNull(viewModel.currentTourProperty()));

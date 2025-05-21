@@ -14,6 +14,7 @@ public class ViewTourViewModel {
     private final ObjectProperty<TourItem> currentTour = new SimpleObjectProperty<>(null);
     private final PropertyChangeSupport editTourEvent = new PropertyChangeSupport(this);
     private TourManager tourManager;
+
     
     public ViewTourViewModel(TourManager tourManager) {
         this.tourManager = tourManager;

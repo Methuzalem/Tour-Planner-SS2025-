@@ -8,9 +8,9 @@ import java.util.UUID;
 
 public class TourManager {
     private ObservableList<TourItem> tourList = FXCollections.observableArrayList(
-        new TourItem("1","Tour 1", "Description 1", "From 1", "To 1", "Car", 10.0, "1 hour", "Route info 1"),
-        new TourItem("2","Tour 2", "Description 2", "From 2", "To 2", "Bike", 20.0, "2 hours", "Route info 2"),
-        new TourItem("3","Tour 3", "Description 3", "From 3", "To 3", "Walk", 5.0, "30 minutes", "Route info 3")
+        new TourItem("1","Tour 1", "Description 1", "From 1", "To 1", "Car", 10.0, "1 hour", "Route info 1", "https://www.horizont.at/news/media/1/--9777.jpeg"),
+        new TourItem("2","Tour 2", "Description 2", "From 2", "To 2", "Bike", 20.0, "2 hours", "Route info 2", "https://www.horizont.at/news/media/1/--9777.jpeg"),
+        new TourItem("3","Tour 3", "Description 3", "From 3", "To 3", "Walk", 5.0, "30 minutes", "Route info 3", "https://www.horizont.at/news/media/1/--9777.jpeg")
     );
 
     // read the list of tours
@@ -29,8 +29,8 @@ public class TourManager {
                 tour.description(),
                 tour.from(),
                 tour.to(),
-                tour.transportType(),
                 tour.distance(),
+                tour.transportType(),
                 tour.estimatedTime(),
                 tour.routeInformation()
             );
