@@ -12,6 +12,7 @@ class EditTourViewModelTest {
     private EditTourViewModel viewModel;
     private TourManager tourManager;
 
+
     @BeforeEach
     void setUp() {
         tourManager = mock(TourManager.class);
@@ -29,7 +30,7 @@ class EditTourViewModelTest {
         viewModel.estimatedTimeProperty().set("2h");
         viewModel.routeInformationProperty().set("Fastest route");
 
-        viewModel.createNewTour();
+        viewModel.saveTour();
 
         verify(tourManager, times(1)).saveTour(any(TourItem.class));
     }
@@ -41,7 +42,7 @@ class EditTourViewModelTest {
         viewModel.toProperty().set("Graz");
         viewModel.distanceProperty().set(100.0);
 
-        viewModel.createNewTour();
+        viewModel.saveTour();
 
         verify(tourManager, never()).saveTour(any());
     }
