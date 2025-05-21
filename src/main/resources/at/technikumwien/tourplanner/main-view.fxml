@@ -15,18 +15,21 @@
             <Label text="Tour Planner" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
         </HBox>
     </top>
-    
-<center>
-    <HBox spacing="10">
-        <!-- Left panel (Tour List) - 1/3 width -->
-        <VBox spacing="10" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="100">
-            <fx:include source="tour-list.fxml" VBox.vgrow="ALWAYS" />
-        </VBox>
 
-        <!-- Right panel (Dynamic Content) - 2/3 width -->
-        <StackPane fx:id="dynamicContent" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="200"/>
-    </HBox>
-</center>
+    <center>
+        <HBox spacing="10">
+            <!-- Left panel (Tour List) -->
+            <VBox maxWidth="Infinity" prefWidth="100" spacing="10" HBox.hgrow="ALWAYS">
+                <fx:include source="tour-list.fxml" VBox.vgrow="ALWAYS" />
+            </VBox>
+
+            <!-- Right panel: StackPanes untereinander -->
+            <VBox spacing="10" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <StackPane fx:id="dynamicContent" prefHeight="295.0" prefWidth="200" VBox.vgrow="ALWAYS" />
+                <StackPane fx:id="dynamicContent2" prefHeight="295.0" prefWidth="200" VBox.vgrow="ALWAYS" />
+            </VBox>
+        </HBox>
+    </center>
     
     <bottom>
     </bottom>
