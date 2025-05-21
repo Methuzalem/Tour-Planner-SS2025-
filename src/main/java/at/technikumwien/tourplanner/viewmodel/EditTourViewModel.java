@@ -23,16 +23,13 @@ public class EditTourViewModel {
     private final SimpleDoubleProperty distance = new SimpleDoubleProperty(0.0);
     private final SimpleStringProperty estimatedTime = new SimpleStringProperty("");
     private final SimpleStringProperty routeInformation = new SimpleStringProperty("");
+    private final SimpleStringProperty imageUrl = new SimpleStringProperty("");
 
     public EditTourViewModel(TourManager tourManager) {
         this.tourManager = tourManager;
     }
 
     // Property getters
-    public SimpleStringProperty idProperty() {
-        return id;
-    }
-
     public SimpleStringProperty nameProperty() {
         return name;
     }
@@ -84,9 +81,10 @@ public class EditTourViewModel {
         distance.set(tour.distance());
         estimatedTime.set(tour.estimatedTime());
         routeInformation.set(tour.routeInformation());
+        imageUrl.set(tour.imageUrl());
     }
 
-    public void createNewTour() {
+    public void saveTour() {
         // Validate input before creating a tour
         if (!validateInputs()) {
             validationErrorEvent.firePropertyChange(Event.VALIDATION_ERROR, null, null);
@@ -99,10 +97,11 @@ public class EditTourViewModel {
             description.get(),
             from.get(),
             to.get(),
-            distance.get(),
             transportType.get(),
+            distance.get(),
             estimatedTime.get(),
-            routeInformation.get()
+            routeInformation.get(),
+            imageUrl.get()
         );
         
         this.tourManager.saveTour(tourItem);
