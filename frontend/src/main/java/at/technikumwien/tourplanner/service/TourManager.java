@@ -19,7 +19,7 @@ public class TourManager {
     public TourManager() {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080"))
+                .uri(URI.create("http://localhost:8080/tours"))
                 .GET()
                 .build();
 
