@@ -1,17 +1,41 @@
 package at.technikumwien.tourplanner.service;
 
 import at.technikumwien.tourplanner.model.TourItem;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.UUID;
 
 public class TourManager {
-    private ObservableList<TourItem> tourList = FXCollections.observableArrayList(
-        new TourItem("1","Tour 1", "Description 1", "From 1", "To 1", "Car", 10.0, "1 hour", "Route info 1", "https://www.horizont.at/news/media/1/--9777.jpeg"),
-        new TourItem("2","Tour 2", "Description 2", "From 2", "To 2", "Bike", 20.0, "2 hours", "Route info 2", "https://www.horizont.at/news/media/1/--9777.jpeg"),
-        new TourItem("3","Tour 3", "Description 3", "From 3", "To 3", "Walk", 5.0, "30 minutes", "Route info 3", "https://www.horizont.at/news/media/1/--9777.jpeg")
-    );
+    private ObservableList<TourItem> tourList = FXCollections.observableArrayList();
+
+    public TourManager() {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080"))
+                .GET()
+                .build();
+
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // parse the string with jackson
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<TourItem> tours = objectMapper.readValue(response.body(), new TypeReference<List<TourItem>>() {});
+            tourList.setAll(tours);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error fetching tours: " + e.getMessage());
+        }
+
+    }
 
     // read the list of tours
     public ObservableList<TourItem> getTourList() {
