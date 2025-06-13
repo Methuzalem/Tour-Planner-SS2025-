@@ -1,6 +1,8 @@
 module at.technikumwien.tourplanner {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.net.http;
+    requires com.fasterxml.jackson.databind;
     requires java.desktop;
 
     opens at.technikumwien.tourplanner to javafx.fxml;
