@@ -17,5 +17,15 @@ public class TourService {
         return repository.findAll();
     }
 
-    // You can also add save, update, delete methods here
+    public TourItem saveTour(TourItem tour) {
+        return repository.save(tour);
+    }
+
+    public void deleteTour(String id) {
+        repository.deleteById(id);
+    }
+
+    public TourItem getTourById(String id) {
+        return repository.findById(id).orElse(null);
+    }
 }

@@ -1,6 +1,7 @@
 package at.technikumwien.tourplanner.viewmodel;
 
 import at.technikumwien.tourplanner.model.TourItem;
+import at.technikumwien.tourplanner.service.RouteService;
 import at.technikumwien.tourplanner.service.TourManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,12 +12,14 @@ class EditTourViewModelTest {
 
     private EditTourViewModel viewModel;
     private TourManager tourManager;
+    private RouteService routeService;
 
 
     @BeforeEach
     void setUp() {
         tourManager = mock(TourManager.class);
-        viewModel = new EditTourViewModel(tourManager);
+        routeService = mock(RouteService.class);
+        viewModel = new EditTourViewModel(tourManager, routeService);
     }
 
     @Test
@@ -27,7 +30,7 @@ class EditTourViewModelTest {
         viewModel.descriptionProperty().set("Test description");
         viewModel.transportTypeProperty().set("Car");
         viewModel.distanceProperty().set(200.5);
-        viewModel.estimatedTimeProperty().set("2h");
+        viewModel.estimatedTimeProperty().set(120);
         viewModel.routeInformationProperty().set("Fastest route");
 
         viewModel.saveTour();

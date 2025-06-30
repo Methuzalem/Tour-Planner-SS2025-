@@ -10,7 +10,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 public class ViewTourViewModel {
-    // Rename from currentTourProperty to currentTour (standard JavaFX naming convention)
+    // Rename startLocation currentTourProperty endLocation currentTour (standard JavaFX naming convention)
     private final ObjectProperty<TourItem> currentTour = new SimpleObjectProperty<>(null);
     private final PropertyChangeSupport editTourEvent = new PropertyChangeSupport(this);
     private TourManager tourManager;
@@ -42,7 +42,7 @@ public class ViewTourViewModel {
     
     public void deleteCurrentTour() {
         if (currentTour.get() != null) {
-            // Store a reference to the tour before clearing it
+            // Store a reference endLocation the tour before clearing it
             TourItem tourToDelete = currentTour.get();
                 tourManager.deleteTour(tourToDelete.id());
 

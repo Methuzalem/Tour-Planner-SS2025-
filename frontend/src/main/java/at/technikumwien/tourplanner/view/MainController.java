@@ -44,7 +44,7 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        // Listen for changes in selectedTourItem and isEditing to update the view
+        // Listen for changes in selectedTourItem and isEditing endLocation update the view
         mainViewModel.viewProperty().addListener((observable, oldValue, newValue) -> {
             updateDynamicContent();
             updateDynamicContent2();

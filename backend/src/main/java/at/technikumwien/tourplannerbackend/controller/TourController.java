@@ -3,8 +3,7 @@ package at.technikumwien.tourplannerbackend.controller;
 import at.technikumwien.tourplannerbackend.model.TourItem;
 import at.technikumwien.tourplannerbackend.repository.TourItemRepository;
 import at.technikumwien.tourplannerbackend.service.TourService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,5 +20,24 @@ public class TourController {
     @GetMapping("/tours")
     public List<TourItem> getTours() {
         return tourService.getAllTours();
+    }
+
+    @PostMapping("/tours")
+    public TourItem saveTour(@RequestBody TourItem tour) {
+        System.out.println(tour.getStartLocation().getDisplayName());
+        System.out.println(tour.getStartLocation().getLatitude());
+        System.out.println(tour.getStartLocation().getLongitude());
+
+        return tourService.saveTour(tour);
+    }
+
+    @PutMapping("/tours")
+    public TourItem updateTour(@RequestBody TourItem tour) {
+        return tourService.saveTour(tour);
+    }
+
+    @DeleteMapping("/tours/{id}")
+    public void deleteTour(@PathVariable String id) {
+        tourService.deleteTour(id);
     }
 }
