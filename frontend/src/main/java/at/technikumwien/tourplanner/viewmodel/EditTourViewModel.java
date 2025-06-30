@@ -14,6 +14,8 @@ import java.beans.PropertyChangeSupport;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class EditTourViewModel {
     private final TourManager tourManager;
@@ -21,6 +23,10 @@ public class EditTourViewModel {
     private final PropertyChangeSupport cancelEditEvent = new PropertyChangeSupport(this);
     private final PropertyChangeSupport validationErrorEvent = new PropertyChangeSupport(this);
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final ScheduledExecutorService debounceFromExecutor = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService debounceToExecutor = Executors.newSingleThreadScheduledExecutor();
+    private volatile Runnable debounceFromSuggestionsTask;
+    private volatile Runnable debounceToSuggestionsTask;
 
     // Properties for all tour fields
     private final SimpleStringProperty id = new SimpleStringProperty(null);
@@ -32,7 +38,6 @@ public class EditTourViewModel {
     private final SimpleDoubleProperty distance = new SimpleDoubleProperty(0.0);
     private final SimpleIntegerProperty estimatedTime = new SimpleIntegerProperty(0);
     private final SimpleStringProperty routeInformation = new SimpleStringProperty("");
-    private final SimpleStringProperty imageUrl = new SimpleStringProperty("");
 
     // Autocomplete suggestions
     private final ObservableList<Location> fromSuggestions = FXCollections.observableArrayList();
@@ -213,7 +218,20 @@ public class EditTourViewModel {
      */
     public void fetchFromLocationSuggestions(String query) {
         System.out.println("Fetching location suggestions for query: " + query);
-        executorService.submit(() -> {
+
+        // If the query is equal to a previously fetched suggestion, do not fetch again
+        if (fromSuggestions.stream().anyMatch(location -> location.getDisplayName().equalsIgnoreCase(query))) {
+            System.out.println("Query matches existing suggestion, skipping fetch.");
+            return;
+        }
+
+        // Cancel any previously scheduled task
+        if (debounceFromSuggestionsTask != null) {
+            debounceFromExecutor.schedule(() -> {}, 0, TimeUnit.MILLISECONDS); // No-op to cancel
+        }
+
+        // Schedule a new task with a delay
+        debounceFromSuggestionsTask = () -> {
             List<Location> suggestions = routeService.getLocationSuggestions(query);
 
             // Update the UI on the JavaFX Application Thread
@@ -222,7 +240,9 @@ public class EditTourViewModel {
                 fromSuggestions.clear();
                 fromSuggestions.addAll(suggestions);
             });
-        });
+        };
+
+        debounceFromExecutor.schedule(debounceFromSuggestionsTask, 1000, TimeUnit.MILLISECONDS); // 300ms delay
     }
 
     /**
@@ -230,15 +250,32 @@ public class EditTourViewModel {
      * @param query The search query text
      */
     public void fetchToLocationSuggestions(String query) {
-        executorService.submit(() -> {
+        System.out.println("Fetching location suggestions for query: " + query);
+
+        // If the query is equal to a previously fetched suggestion, do not fetch again
+        if (toSuggestions.stream().anyMatch(location -> location.getDisplayName().equalsIgnoreCase(query))) {
+            System.out.println("Query matches existing suggestion, skipping fetch.");
+            return;
+        }
+
+        // Cancel any previously scheduled task
+        if (debounceToSuggestionsTask != null) {
+            debounceToExecutor.schedule(() -> {}, 0, TimeUnit.MILLISECONDS); // No-op to cancel
+        }
+
+        // Schedule a new task with a delay
+        debounceToSuggestionsTask = () -> {
             List<Location> suggestions = routeService.getLocationSuggestions(query);
 
             // Update the UI on the JavaFX Application Thread
             javafx.application.Platform.runLater(() -> {
+                System.out.println("Received suggestions: " + suggestions);
                 toSuggestions.clear();
                 toSuggestions.addAll(suggestions);
             });
-        });
+        };
+
+        debounceToExecutor.schedule(debounceToSuggestionsTask, 1000, TimeUnit.MILLISECONDS); // 300ms delay
     }
 
     /**
