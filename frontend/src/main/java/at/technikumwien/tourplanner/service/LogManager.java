@@ -53,6 +53,10 @@ public class LogManager {
     }
 
     public void saveLog(LogItem logItem) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        HttpClient client = HttpClient.newHttpClient();
+
         if (logItem.logId() == null) {
             String newId = UUID.randomUUID().toString();
             LogItem newItem = new LogItem(
@@ -65,7 +69,23 @@ public class LogManager {
                     logItem.totalDistance(),
                     logItem.rating()
             );
-            logList.add(newItem);
+
+            try {
+                String requestBody = mapper.writeValueAsString(newItem);
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create("http://localhost:8080/logs"))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                        .build();
+
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Error posting log: " + e.getMessage());
+            }
+
         } else {
             //update if existing
             for (int i = 0; i < logList.size(); i++) {

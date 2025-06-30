@@ -3,14 +3,24 @@ package at.technikumwien.tourplanner.viewmodel;
 import at.technikumwien.tourplanner.model.LogItem;
 import at.technikumwien.tourplanner.service.LogManager;
 import at.technikumwien.tourplanner.utils.Event;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDate;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.List;
 
 public class LogListViewModel {
     private final LogManager logManager;
@@ -18,7 +28,7 @@ public class LogListViewModel {
     private final ObjectProperty<LogItem> selectedLog = new SimpleObjectProperty<>();
     private final PropertyChangeSupport createLogEvent = new PropertyChangeSupport(this);
     private final ObservableList<LogItem> filteredLogs = FXCollections.observableArrayList();
-    //    private final ObjectProperty<TourItem> currentTour = new SimpleObjectProperty<>(null);
+
 
     public LogListViewModel(LogManager logManager) {
         this.logManager = logManager;
@@ -29,12 +39,32 @@ public class LogListViewModel {
     }
 
     public void loadLogsForTour(String tourId) {
-        filteredLogs.setAll(
-                getLogList().stream()
-                        .filter(log -> tourId != null && tourId.equals(log.getTourId())) //check if selected Tour equals TourIDs in List
-                        .toList()
-        );
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://localhost:8080/logs"))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+
+            List<LogItem> logs = objectMapper.readValue(response.body(), new TypeReference<List<LogItem>>() {});
+            Platform.runLater(() -> {
+                filteredLogs.setAll(
+                        logs.stream()
+                                .filter(log -> tourId == null || tourId.equals(log.getTourId()))
+                                .toList()
+                );
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 
     public ObservableList<LogItem> getLogList() {
         return logManager.getLogList();
@@ -59,5 +89,22 @@ public class LogListViewModel {
 
     public void deleteLog() {
         logManager.deleteLog(selectedLog.get());
+    }
+
+    public void filterLogs(String query) {
+        List<LogItem> allLogs = logManager.getLogList();
+        String lowerQuery = query.toLowerCase();
+
+        List<LogItem> filtered = allLogs.stream()
+                .filter(log ->
+                        log.getComment().toLowerCase().contains(lowerQuery) ||
+                                log.getRating().toLowerCase().contains(lowerQuery) ||
+                                log.getTotalTime().toLowerCase().contains(lowerQuery) ||
+                                log.getTotalDistance().toLowerCase().contains(lowerQuery) ||
+                                log.getDate().toString().contains(lowerQuery)
+                )
+                .toList();
+
+        Platform.runLater(() -> filteredLogs.setAll(filtered));
     }
 }

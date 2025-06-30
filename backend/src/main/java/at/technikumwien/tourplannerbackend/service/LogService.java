@@ -19,4 +19,8 @@ public class LogService {
     }
 
     // You can also add save, update, delete methods here
+
+    public void saveLog(LogItem item) {
+        repository.save(item);
+    }
 }

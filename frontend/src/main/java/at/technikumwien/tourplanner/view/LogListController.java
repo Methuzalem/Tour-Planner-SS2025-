@@ -2,21 +2,32 @@ package at.technikumwien.tourplanner.view;
 
 import at.technikumwien.tourplanner.model.LogItem;
 import at.technikumwien.tourplanner.viewmodel.LogListViewModel;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 
 import java.util.Optional;
 
 public class LogListController {
     @FXML
-    private ListView<LogItem> logList;
+    private TableView<LogItem> logTable;
+    @FXML
+    private TableColumn<LogItem, String> dateColumn;
+    @FXML
+    private TableColumn<LogItem, String> difficultyColumn;
+    @FXML
+    private TableColumn<LogItem, String> commentColumn;
+    @FXML
+    private TableColumn<LogItem, String> totalTimeColumn;
+    @FXML
+    private TableColumn<LogItem, String> totalDistanceColumn;
+    @FXML
+    private TableColumn<LogItem, String> ratingColumn;
+    @FXML
+    private TextField searchField;
 
     private final LogListViewModel logListViewModel;
-
 
     public LogListController(LogListViewModel logListViewModel) {
         this.logListViewModel = logListViewModel;
@@ -24,26 +35,23 @@ public class LogListController {
 
     @FXML
     public void initialize() {
-        // Bind logList Items filtered
-        logList.setItems(logListViewModel.getFilteredLogs());
+        logTable.setItems(logListViewModel.getFilteredLogs());
 
-        // show Items row per row
-        logList.setCellFactory(listView -> new ListCell<LogItem>() {
-            @Override
-            protected void updateItem(LogItem item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText("Date: " + item.getDate() + " | Difficulty: " + item.getDifficulty() + " | Rating: " + item.getRating() + " | Time: " + item.getTotalTime() + " | Distance: " + item.getTotalDistance() + " | Comment: " + item.getComment());
-                }
-            }
-        });
-        //get selected item
-        logList.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newItem) -> {
+        dateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDate().toString()));
+        difficultyColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getDifficulty())));
+        commentColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getComment()));
+        totalTimeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTotalTime()));
+        totalDistanceColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTotalDistance()));
+        ratingColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRating()));
+
+        logTable.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newItem) -> {
             if (newItem != null) {
                 logListViewModel.selectedLogProperty().set(newItem);
             }
+        });
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            logListViewModel.filterLogs(newValue);
         });
     }
 
@@ -77,16 +85,13 @@ public class LogListController {
             return;
         }
 
-        // Show a confirmation dialog
         Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
         confirmDialog.setTitle("Delete Log");
         confirmDialog.setHeaderText("Delete Log");
         confirmDialog.setContentText("Are you sure you want to delete this log? This action cannot be undone.");
 
-        // Handle the user's response
         Optional<ButtonType> result = confirmDialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            // User confirmed, proceed with deletion
             logListViewModel.deleteLog();
         }
     }

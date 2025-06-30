@@ -5,16 +5,18 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <?import javafx.geometry.Insets?>
+
 <VBox spacing="10" xmlns:fx="http://javafx.com/fxml"
       fx:controller="at.technikumwien.tourplanner.view.LogListController">
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
     </padding>
 
+    <!-- Top controls: search bar and buttons -->
     <HBox spacing="5" alignment="CENTER_LEFT">
         <Label text="Log List" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="searchField" promptText="Search logs..." />
         <Region HBox.hgrow="ALWAYS" />
         <Button text="Create Log" onAction="#onCreateLogButtonClick" />
         <Button text="Edit Log" fx:id="editButton" onAction="#onEditLogButtonClick"/>
@@ -22,5 +24,15 @@
                 style="-fx-background-color: #ffcccc;"/>
     </HBox>
 
-    <ListView fx:id="logList" VBox.vgrow="ALWAYS"/>
+    <!-- TableView for logs -->
+    <TableView fx:id="logTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="dateColumn" text="Date" />
+            <TableColumn fx:id="difficultyColumn" text="Difficulty" />
+            <TableColumn fx:id="commentColumn" text="Comment" />
+            <TableColumn fx:id="totalTimeColumn" text="Total Time" />
+            <TableColumn fx:id="totalDistanceColumn" text="Total Distance" />
+            <TableColumn fx:id="ratingColumn" text="Rating" />
+        </columns>
+    </TableView>
 </VBox>
