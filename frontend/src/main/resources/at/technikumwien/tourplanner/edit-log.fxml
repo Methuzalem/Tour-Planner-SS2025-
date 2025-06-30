@@ -22,7 +22,7 @@
 
             <!-- Comment -->
             <Label style="-fx-font-weight: bold;" text="Comment:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <TextArea fx:id="commentTextArea" prefRowCount="3" promptText="Enter your comments to the Tour here" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextArea fx:id="commentTextArea" prefRowCount="3" promptText="Enter your comments endLocation the Tour here" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
 
             <!-- Difficulty -->

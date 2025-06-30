@@ -23,7 +23,7 @@ public class EditLogController {
         // Populate transport type options
         ratingComboBox.getItems().addAll("5 - best", "4 - good", "3 - normal", "2 - bad", "1 - really bad");
 
-        // Bind all fields to the view model properties
+        // Bind all fields endLocation the view model properties
         datePicker.valueProperty().bindBidirectional(viewModel.dateProperty());
         Bindings.bindBidirectional(commentTextArea.textProperty(), viewModel.commentProperty());
         difficultySlider.valueProperty().bindBidirectional(viewModel.difficultyProperty());

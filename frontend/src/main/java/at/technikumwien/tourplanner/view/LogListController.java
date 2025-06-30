@@ -66,7 +66,7 @@ public class LogListController {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("NO Log Selection");
-            alert.setContentText("Please select a log to edit!");
+            alert.setContentText("Please select a log endLocation edit!");
             alert.showAndWait();
             return;
         }
@@ -80,7 +80,7 @@ public class LogListController {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Invalid Log Selection");
-            alert.setContentText("Please select a log to delete it");
+            alert.setContentText("Please select a log endLocation delete it");
             alert.showAndWait();
             return;
         }
@@ -88,7 +88,7 @@ public class LogListController {
         Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
         confirmDialog.setTitle("Delete Log");
         confirmDialog.setHeaderText("Delete Log");
-        confirmDialog.setContentText("Are you sure you want to delete this log? This action cannot be undone.");
+        confirmDialog.setContentText("Are you sure you want endLocation delete this log? This action cannot be undone.");
 
         Optional<ButtonType> result = confirmDialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {

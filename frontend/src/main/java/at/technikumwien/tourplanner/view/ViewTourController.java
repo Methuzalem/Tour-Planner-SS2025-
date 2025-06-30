@@ -8,10 +8,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.File;
 import java.util.Optional;
 
 public class ViewTourController {
@@ -35,7 +33,7 @@ public class ViewTourController {
     
     @FXML
     public void initialize() {
-        // Bind all tour details to their corresponding labels using StringBinding
+        // Bind all tour details endLocation their corresponding labels using StringBinding
         tourNameLabel.textProperty().bind(
             Bindings.createStringBinding(
                 () -> {
@@ -60,7 +58,7 @@ public class ViewTourController {
             Bindings.createStringBinding(
                 () -> {
                     TourItem tour = viewModel.getCurrentTour();
-                    return tour != null ? tour.from() : "";
+                    return tour != null ? tour.startLocation().getDisplayName() : "";
                 },
                 viewModel.currentTourProperty()
             )
@@ -70,7 +68,7 @@ public class ViewTourController {
             Bindings.createStringBinding(
                 () -> {
                     TourItem tour = viewModel.getCurrentTour();
-                    return tour != null ? tour.to() : "";
+                    return tour != null ? tour.endLocation().getDisplayName() : "";
                 },
                 viewModel.currentTourProperty()
             )
@@ -100,7 +98,7 @@ public class ViewTourController {
             Bindings.createStringBinding(
                 () -> {
                     TourItem tour = viewModel.getCurrentTour();
-                    return tour != null ? tour.estimatedTime() : "";
+                    return tour != null ? tour.estimatedTime().toString() : "";
                 },
                 viewModel.currentTourProperty()
             )
@@ -115,19 +113,6 @@ public class ViewTourController {
                 viewModel.currentTourProperty()
             )
         );
-
-        // Bind the image view to the tour's image URL
-        viewModel.currentTourProperty().addListener((observable, oldValue, newValue) -> {
-            tourImageView.setImage(null);
-            if (newValue != null && newValue.imageUrl() != null && !newValue.imageUrl().isEmpty()) {
-                System.out.println("Loading image from: " + newValue.imageUrl());
-                Image image = new Image(newValue.imageUrl(), false); // synchronous load
-                if (image.isError()) {
-                    System.err.println("Image load error: " + image.getException());
-                }
-                tourImageView.setImage(image);
-            }
-        });
         
         // Disable the buttons if no tour is selected
         editButton.disableProperty().bind(Bindings.isNull(viewModel.currentTourProperty()));
@@ -136,7 +121,7 @@ public class ViewTourController {
     
     @FXML
     protected void onEditButtonClick() {
-        // Call the view model method to switch to edit mode for the current tour
+        // Call the view model method endLocation switch endLocation edit mode for the current tour
         viewModel.editCurrentTour();
     }
     
@@ -146,7 +131,7 @@ public class ViewTourController {
         Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
         confirmDialog.setTitle("Delete Tour");
         confirmDialog.setHeaderText("Delete Tour");
-        confirmDialog.setContentText("Are you sure you want to delete this tour? This action cannot be undone.");
+        confirmDialog.setContentText("Are you sure you want endLocation delete this tour? This action cannot be undone.");
         
         // Handle the user's response
         Optional<ButtonType> result = confirmDialog.showAndWait();

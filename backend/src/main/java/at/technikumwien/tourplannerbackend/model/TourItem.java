@@ -1,11 +1,16 @@
 package at.technikumwien.tourplannerbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 import jakarta.persistence.Table;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.AttributeOverride;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "tour_items")
@@ -13,16 +18,28 @@ public class TourItem {
 
     @Id
     @Column(nullable = false, updatable = false)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private String id;
 
     private String name;
     private String description;
 
-    @Column(name = "start_location")
-    private String from;
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "displayName", column = @Column(name = "start_location_name")),
+        @AttributeOverride(name = "latitude", column = @Column(name = "start_location_lat")),
+        @AttributeOverride(name = "longitude", column = @Column(name = "start_location_lng"))
+    })
+    private Location startLocation;
 
-    @Column(name = "end_location")
-    private String to;
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "displayName", column = @Column(name = "end_location_name")),
+        @AttributeOverride(name = "latitude", column = @Column(name = "end_location_lat")),
+        @AttributeOverride(name = "longitude", column = @Column(name = "end_location_lng"))
+    })
+    private Location endLocation;
 
     @Column(name = "transport_type")
     private String transportType;
@@ -30,13 +47,10 @@ public class TourItem {
     private Double distance;
 
     @Column(name = "estimated_time")
-    private String estimatedTime;
+    private Integer estimatedTime;
 
     @Column(name = "route_information")
     private String routeInformation;
-
-    @Column(name = "image_url")
-    private String imageUrl;
 
     // No-arg constructor required by Hibernate
     public TourItem() {}
@@ -46,24 +60,22 @@ public class TourItem {
             String id,
             String name,
             String description,
-            String from,
-            String to,
+            Location startLocation,
+            Location endLocation,
             String transportType,
             Double distance,
-            String estimatedTime,
-            String routeInformation,
-            String imageUrl
+            Integer estimatedTime,
+            String routeInformation
     ) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.from = from;
-        this.to = to;
+        this.startLocation = startLocation;
+        this.endLocation = endLocation;
         this.transportType = transportType;
         this.distance = distance;
         this.estimatedTime = estimatedTime;
         this.routeInformation = routeInformation;
-        this.imageUrl = imageUrl;
     }
 
     // Getters and Setters for all fields
@@ -94,20 +106,20 @@ public class TourItem {
         this.description = description;
     }
 
-    public String getFrom() {
-        return from;
+    public Location getStartLocation() {
+        return startLocation;
     }
 
-    public void setFrom(String from) {
-        this.from = from;
+    public void setStartLocation(Location startLocation) {
+        this.startLocation = startLocation;
     }
 
-    public String getTo() {
-        return to;
+    public Location getEndLocation() {
+        return endLocation;
     }
 
-    public void setTo(String to) {
-        this.to = to;
+    public void setEndLocation(Location endLocation) {
+        this.endLocation = endLocation;
     }
 
     public String getTransportType() {
@@ -126,11 +138,11 @@ public class TourItem {
         this.distance = distance;
     }
 
-    public String getEstimatedTime() {
+    public Integer getEstimatedTime() {
         return estimatedTime;
     }
 
-    public void setEstimatedTime(String estimatedTime) {
+    public void setEstimatedTime(Integer estimatedTime) {
         this.estimatedTime = estimatedTime;
     }
 
@@ -140,13 +152,5 @@ public class TourItem {
 
     public void setRouteInformation(String routeInformation) {
         this.routeInformation = routeInformation;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
     }
 }
