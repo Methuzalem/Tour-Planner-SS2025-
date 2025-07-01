@@ -5,6 +5,7 @@ module at.technikumwien.tourplanner {
     requires com.fasterxml.jackson.datatype.jsr310;
     requires com.fasterxml.jackson.databind;
     requires java.desktop;
+    requires javafx.web;
 
     opens at.technikumwien.tourplanner to javafx.fxml;
     exports at.technikumwien.tourplanner;
