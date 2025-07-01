@@ -38,9 +38,10 @@ public class RouteService {
             HttpResponse<String> response = httpClient.send(request,
                     HttpResponse.BodyHandlers.ofString());
 
-System.out.println("Response status code: " + response.statusCode());
-System.out.println("Response body: " + response.body());
-                return objectMapper.readValue(response.body(), new TypeReference<List<Location>>() {});
+            System.out.println("Response status code: " + response.statusCode());
+            System.out.println("Response body: " + response.body());
+            return objectMapper.readValue(response.body(), new TypeReference<List<Location>>() {
+            });
         } catch (Exception e) {
             System.err.println("Error fetching location suggestions: " + e.getMessage());
             e.printStackTrace();
