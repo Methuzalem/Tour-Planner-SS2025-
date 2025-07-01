@@ -177,6 +177,16 @@ public class EditTourViewModel {
             if (transportType.get() == null || transportType.get().trim().isEmpty()) {
                 return false;
             }
+
+            // make sure startLocation has latitude and longitude
+            if (from.get().getLatitude() == 0.0 && from.get().getLongitude() == 0.0) {
+                return false;
+            }
+
+            // make sure endLocation has latitude and longitude
+            if (to.get().getLatitude() == 0.0 && to.get().getLongitude() == 0.0) {
+                return false;
+            }
             
             return true;
         } catch (Exception e) {
