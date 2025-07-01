@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.web.WebView?>
 
 <?import javafx.scene.web.WebView?>
 <ScrollPane fitToWidth="true" xmlns:fx="http://javafx.com/fxml"
@@ -68,7 +69,10 @@
                     <padding>
                         <Insets top="20" right="20" bottom="20" left="20"/>
                     </padding>
-                    <fx:include source="map_view.fxml"/>
+                    <AnchorPane xmlns:fx="http://javafx.com/fxml">
+                        <WebView fx:id="webView" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                                 AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"/>
+                    </AnchorPane>
                 </VBox>
             </Tab>
         </TabPane>

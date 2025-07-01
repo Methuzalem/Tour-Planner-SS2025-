@@ -4,6 +4,7 @@ import at.technikumwien.tourplanner.service.LogManager;
 import at.technikumwien.tourplanner.service.RouteService;
 import at.technikumwien.tourplanner.service.TourManager;
 import at.technikumwien.tourplanner.view.MainController;
+import at.technikumwien.tourplanner.view.MapController;
 import at.technikumwien.tourplanner.view.TourListController;
 import at.technikumwien.tourplanner.view.ViewTourController;
 import at.technikumwien.tourplanner.viewmodel.*;
@@ -55,9 +56,7 @@ public class TourPlannerApplication extends Application {
                 return new MainController(mainViewModel, viewTourViewModel, editTourViewModel, tourListViewModel, logListViewModel, editLogViewModel, logManager);
             } else if (controllerClass == TourListController.class) {
                 return new TourListController(tourListViewModel);
-            } else if (controllerClass == ViewTourController.class) {
-                return new ViewTourController(viewTourViewModel);
-            } else {
+            }  else {
                 throw new IllegalArgumentException("Unknown controller class: " + controllerClass);
             }
         });
