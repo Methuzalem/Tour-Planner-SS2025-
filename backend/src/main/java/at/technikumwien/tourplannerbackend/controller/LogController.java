@@ -26,4 +26,10 @@ public class LogController {
     public void createLog(@RequestBody LogItem logItem) {
         logService.saveLog(logItem);
     }
+
+    // PUT /logs/{id}
+    @PutMapping("/{id}")
+    public void updateLog(@PathVariable String id, @RequestBody LogItem updatedLog) {
+        logService.updateLog(id, updatedLog);
+    }
 }

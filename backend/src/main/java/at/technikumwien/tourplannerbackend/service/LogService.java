@@ -23,4 +23,20 @@ public class LogService {
     public void saveLog(LogItem item) {
         repository.save(item);
     }
+
+    public void updateLog(String id, LogItem updatedLog) {
+        LogItem existing = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Log with ID " + id + " not found"));
+
+        // overwrite fields
+        existing.setTourId(updatedLog.getTourId());
+        existing.setDate(updatedLog.getDate());
+        existing.setDifficulty(updatedLog.getDifficulty());
+        existing.setComment(updatedLog.getComment());
+        existing.setTotalTime(updatedLog.getTotalTime());
+        existing.setTotalDistance(updatedLog.getTotalDistance());
+        existing.setRating(updatedLog.getRating());
+
+        repository.save(existing);
+    }
 }

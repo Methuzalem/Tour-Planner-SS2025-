@@ -35,7 +35,8 @@ public class LogManager {
             ObjectMapper objectMapper = new ObjectMapper();
             List<LogItem> logs = objectMapper
                     .registerModule(new JavaTimeModule())
-                    .readValue(response.body(), new TypeReference<List<LogItem>>() {});
+                    .readValue(response.body(), new TypeReference<List<LogItem>>() {
+                    });
             logList.setAll(logs);
         } catch (Exception e) {
             e.printStackTrace();
@@ -80,6 +81,7 @@ public class LogManager {
                         .build();
 
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                logList.add(newItem);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -87,14 +89,31 @@ public class LogManager {
             }
 
         } else {
-            //update if existing
-            for (int i = 0; i < logList.size(); i++) {
-                if (logList.get(i).logId().equals(logItem.logId())) {
-                    logList.set(i, logItem);
-                    createNewLogEvent.firePropertyChange(Event.REFRESH_LOG, null, logItem);
-                    return;
+            try {
+                String requestBody = mapper.writeValueAsString(logItem);
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create("http://localhost:8080/logs/" + logItem.logId()))
+                        .header("Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
+                        .build();
+
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+                for (int i = 0; i < logList.size(); i++) {
+                    if (logList.get(i).logId().equals(logItem.logId())) {
+                        logList.set(i, logItem);
+                        break;
+                    }
                 }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Error updating log: " + e.getMessage());
             }
+
+            createNewLogEvent.firePropertyChange(Event.REFRESH_LOG, null, logItem);
         }
 
         createNewLogEvent.firePropertyChange(Event.REFRESH_LOG, null, logItem);

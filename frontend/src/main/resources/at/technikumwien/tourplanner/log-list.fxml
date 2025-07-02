@@ -29,9 +29,9 @@
         <columns>
             <TableColumn fx:id="dateColumn" text="Date" />
             <TableColumn fx:id="difficultyColumn" text="Difficulty" />
-            <TableColumn fx:id="commentColumn" text="Comment" />
-            <TableColumn fx:id="totalTimeColumn" text="Total Time" />
-            <TableColumn fx:id="totalDistanceColumn" text="Total Distance" />
+            <TableColumn fx:id="commentColumn" text="Comment"  prefWidth="250" />
+            <TableColumn fx:id="totalTimeColumn" text="Time" />
+            <TableColumn fx:id="totalDistanceColumn" text="Distance" />
             <TableColumn fx:id="ratingColumn" text="Rating" />
         </columns>
     </TableView>

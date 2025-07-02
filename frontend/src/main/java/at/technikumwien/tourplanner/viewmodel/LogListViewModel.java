@@ -28,6 +28,7 @@ public class LogListViewModel {
     private final ObjectProperty<LogItem> selectedLog = new SimpleObjectProperty<>();
     private final PropertyChangeSupport createLogEvent = new PropertyChangeSupport(this);
     private final ObservableList<LogItem> filteredLogs = FXCollections.observableArrayList();
+    private final ObservableList<LogItem> filteredLogsOriginal = FXCollections.observableArrayList();
 
 
     public LogListViewModel(LogManager logManager) {
@@ -52,12 +53,21 @@ public class LogListViewModel {
             objectMapper.registerModule(new JavaTimeModule());
 
             List<LogItem> logs = objectMapper.readValue(response.body(), new TypeReference<List<LogItem>>() {});
+
+            //Two lists with filtered data to restore original list (filtered of tours) after filter
             Platform.runLater(() -> {
                 filteredLogs.setAll(
                         logs.stream()
                                 .filter(log -> tourId == null || tourId.equals(log.getTourId()))
                                 .toList()
                 );
+            });
+
+            Platform.runLater(() -> {
+                filteredLogsOriginal.setAll(logs.stream()
+                        .filter(log -> tourId == null || tourId.equals(log.getTourId()))
+                        .toList());
+                filteredLogs.setAll(filteredLogsOriginal);
             });
 
         } catch (Exception e) {
@@ -91,11 +101,11 @@ public class LogListViewModel {
         logManager.deleteLog(selectedLog.get());
     }
 
+
     public void filterLogs(String query) {
-        List<LogItem> allLogs = logManager.getLogList();
         String lowerQuery = query.toLowerCase();
 
-        List<LogItem> filtered = allLogs.stream()
+        List<LogItem> filtered = filteredLogsOriginal.stream()
                 .filter(log ->
                         log.getComment().toLowerCase().contains(lowerQuery) ||
                                 log.getRating().toLowerCase().contains(lowerQuery) ||
