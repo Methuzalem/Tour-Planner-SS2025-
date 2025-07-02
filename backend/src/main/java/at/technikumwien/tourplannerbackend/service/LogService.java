@@ -39,4 +39,8 @@ public class LogService {
 
         repository.save(existing);
     }
+
+    public void deleteLog(String id) {
+        repository.deleteById(id);
+    }
 }

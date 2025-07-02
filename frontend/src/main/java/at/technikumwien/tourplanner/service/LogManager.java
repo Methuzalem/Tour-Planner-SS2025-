@@ -120,14 +120,31 @@ public class LogManager {
     }
 
     public void deleteLog(LogItem logItem) {
-        if (logItem == null) {
+        if (logItem == null || logItem.logId() == null) {
             return;
         }
-        for (int i = 0; i < logList.size(); i++) {
-            if (logList.get(i).logId().equals(logItem.logId())) {
-                logList.remove(i);
+
+        HttpClient client = HttpClient.newHttpClient();
+        String url = "http://localhost:8080/logs/" + logItem.logId();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .DELETE()
+                .build();
+
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                logList.removeIf(log -> log.logId().equals(logItem.logId()));
                 createNewLogEvent.firePropertyChange(Event.REFRESH_LOG, null, logItem);
+            } else {
+                System.out.println("Failed to delete log: " + response.statusCode());
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error deleting log: " + e.getMessage());
         }
     }
 }

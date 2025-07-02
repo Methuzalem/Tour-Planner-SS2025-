@@ -32,4 +32,10 @@ public class LogController {
     public void updateLog(@PathVariable String id, @RequestBody LogItem updatedLog) {
         logService.updateLog(id, updatedLog);
     }
+
+    //DELETE /logs/{id}
+    @DeleteMapping("/{id}")
+    public void deleteLog(@PathVariable String id) {
+        logService.deleteLog(id);
+    }
 }
