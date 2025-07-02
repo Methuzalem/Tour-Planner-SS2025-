@@ -12,10 +12,7 @@ import javafx.collections.ObservableList;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class EditTourViewModel {
     private final TourManager tourManager;
@@ -25,8 +22,8 @@ public class EditTourViewModel {
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final ScheduledExecutorService debounceFromExecutor = Executors.newSingleThreadScheduledExecutor();
     private final ScheduledExecutorService debounceToExecutor = Executors.newSingleThreadScheduledExecutor();
-    private volatile Runnable debounceFromSuggestionsTask;
-    private volatile Runnable debounceToSuggestionsTask;
+    private ScheduledFuture<?> fromSuggestionsFuture;
+    private ScheduledFuture<?> toSuggestionsFuture;
 
     // Properties for all tour fields
     private final SimpleStringProperty id = new SimpleStringProperty(null);
@@ -236,12 +233,12 @@ public class EditTourViewModel {
         }
 
         // Cancel any previously scheduled task
-        if (debounceFromSuggestionsTask != null) {
-            debounceFromExecutor.schedule(() -> {}, 0, TimeUnit.MILLISECONDS); // No-op to cancel
+        if (fromSuggestionsFuture != null && !fromSuggestionsFuture.isDone()) {
+            fromSuggestionsFuture.cancel(true);
         }
 
         // Schedule a new task with a delay
-        debounceFromSuggestionsTask = () -> {
+        Runnable task = () -> {
             List<Location> suggestions = routeService.getLocationSuggestions(query);
 
             // Update the UI on the JavaFX Application Thread
@@ -252,7 +249,7 @@ public class EditTourViewModel {
             });
         };
 
-        debounceFromExecutor.schedule(debounceFromSuggestionsTask, 1000, TimeUnit.MILLISECONDS); // 300ms delay
+        fromSuggestionsFuture = debounceFromExecutor.schedule(task, 500, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -269,12 +266,12 @@ public class EditTourViewModel {
         }
 
         // Cancel any previously scheduled task
-        if (debounceToSuggestionsTask != null) {
-            debounceToExecutor.schedule(() -> {}, 0, TimeUnit.MILLISECONDS); // No-op to cancel
+        if (toSuggestionsFuture != null && !toSuggestionsFuture.isDone()) {
+            toSuggestionsFuture.cancel(true);
         }
 
         // Schedule a new task with a delay
-        debounceToSuggestionsTask = () -> {
+        Runnable task = () -> {
             List<Location> suggestions = routeService.getLocationSuggestions(query);
 
             // Update the UI on the JavaFX Application Thread
@@ -285,7 +282,7 @@ public class EditTourViewModel {
             });
         };
 
-        debounceToExecutor.schedule(debounceToSuggestionsTask, 1000, TimeUnit.MILLISECONDS); // 300ms delay
+        toSuggestionsFuture = debounceToExecutor.schedule(task, 500, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -293,5 +290,7 @@ public class EditTourViewModel {
      */
     public void shutdown() {
         executorService.shutdown();
+        debounceFromExecutor.shutdown();
+        debounceToExecutor.shutdown();
     }
 }
