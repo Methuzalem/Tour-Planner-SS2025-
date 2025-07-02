@@ -21,7 +21,6 @@ public class OpenRouteService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final String apiKey;
-    private static final String BASE_URL = "https://api.openrouteservice.org/geocode/autocomplete";
 
     public OpenRouteService(@Value("${openrouteservice.api.key}") String apiKey) {
         this.restTemplate = new RestTemplate();
@@ -36,7 +35,8 @@ public class OpenRouteService {
 
         try {
             // make an API call to OpenRouteService to get 5 location suggestions
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(BASE_URL)
+        String autocompleteUrl = "https://api.openrouteservice.org/geocode/autocomplete";
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(autocompleteUrl)
                     .queryParam("api_key", apiKey)
                     .queryParam("text", query)
                     .queryParam("size", 5);
@@ -96,5 +96,61 @@ public class OpenRouteService {
 
         // return the list of location objects
         return locations;
+    }
+
+    /**
+     * Calculates the distance between two locations in meters.
+     *
+     * @param from The starting location
+     * @param to The destination location
+     * @return Distance in meters
+     */
+    public double calculateDistance(Location from, Location to) {
+        JsonNode summary = getRouteData(from, to);
+        return summary.path("distance").asDouble();
+    }
+
+    /**
+     * Calculates the travel duration between two locations in seconds.
+     *
+     * @param from The starting location
+     * @param to The destination location
+     * @return Duration in seconds
+     */
+    public double calculateDuration(Location from, Location to) {
+        JsonNode summary = getRouteData(from, to);
+            return summary.path("duration").asDouble();
+    }
+
+    /**
+     * Helper method to retrieve route data from the OpenRouteService API.
+     */
+    private JsonNode getRouteData(Location from, Location to/*, String transportType*/) {
+        try {
+            String directionsUrl = "https://api.openrouteservice.org/v2/directions/driving-car";
+
+            // Create the request body with coordinates in [longitude, latitude] format
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(directionsUrl)
+                    .queryParam("api_key", apiKey)
+                    .queryParam("start", from.getLongitude() + "," + from.getLatitude())
+                    .queryParam("end", to.getLongitude() + "," + to.getLatitude());
+
+            System.out.println(builder.toUriString());
+
+            // Make the request
+            ResponseEntity<String> response = restTemplate.exchange(
+                    builder.toUriString(),
+                    HttpMethod.GET,
+                    HttpEntity.EMPTY,
+                    String.class);
+
+            // Parse the response
+            JsonNode rootNode = objectMapper.readTree(response.getBody());
+            // get the summary via features[0].properties.summary
+            return rootNode.path("features").get(0).path("properties").path("summary");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

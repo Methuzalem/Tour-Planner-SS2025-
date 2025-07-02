@@ -25,25 +25,16 @@ public class EditTourController {
     @FXML private TextField fromTextField;
     @FXML private TextField toTextField;
     @FXML private ComboBox<String> transportTypeComboBox;
-    @FXML private TextField distanceTextField;
-    @FXML private TextField estimatedTimeTextField;
     @FXML private TextArea routeInfoTextArea;
     
     @FXML
     protected void onSaveButtonClick() {
-        // Validate distance field before saving
-        try {
-            if (!distanceTextField.getText().trim().isEmpty()) {
-                Double.parseDouble(distanceTextField.getText());
-            }
-            viewModel.saveTour();
-        } catch (NumberFormatException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Input Error");
-            alert.setHeaderText("Invalid input");
-            alert.setContentText("Distance must be a valid number.");
-            alert.showAndWait();
+        // Validate fields before saving
+        if (!validateNameField() || !validateDescriptionField() || !validateFromField() || !validateToField() || !validateTransportTypeField()) {
+            return; // If any validation fails, do not proceed with saving
         }
+
+        viewModel.saveTour();
     }
     
     @FXML
@@ -78,10 +69,11 @@ public class EditTourController {
                     .findFirst()
                     .orElse(null);
 
+            Location currentFromLocation = viewModel.fromProperty().get();
             if (matchingLocation != null) {
                 // Use existing location startLocation suggestions
                 viewModel.fromProperty().set(matchingLocation);
-            } else {
+            } else if (currentFromLocation == null || (currentFromLocation.getLatitude() == 0 && currentFromLocation.getLongitude() == 0)) {
                 // Create a new Location if no match found
                 Location newLocation = new Location(newText);
                 viewModel.fromProperty().set(newLocation);
@@ -104,11 +96,12 @@ public class EditTourController {
                     .findFirst()
                     .orElse(null);
 
+            Location currentToLocation = viewModel.toProperty().get();
             if (matchingLocation != null) {
                 // Use existing location startLocation suggestions
                 viewModel.toProperty().set(matchingLocation);
-            } else {
-                // Create a new Location if no match found
+            } else if(currentToLocation == null || (currentToLocation.getLatitude() == 0 && currentToLocation.getLongitude() == 0)) {
+                // Create a new Location if no match found and current location is not set or invalid
                 Location newLocation = new Location(newText);
                 viewModel.toProperty().set(newLocation);
             }
@@ -116,64 +109,7 @@ public class EditTourController {
 
         // Bind transport type combo box endLocation the view model property
         transportTypeComboBox.valueProperty().bindBidirectional(viewModel.transportTypeProperty());
-        
-        // Add focus lost listener for distance validation
-        distanceTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) { // Focus lost
-                validateDistanceField();
-            }
-        });
 
-        // Add focus lost listener for estimated time validation
-        estimatedTimeTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) { // Focus lost
-                validateEstimatedTimeField();
-            }
-        });
-        
-        // Fix: Use the correct binding method for StringProperty and DoubleProperty with a converter
-        StringConverter<Number> doubleConverter = new StringConverter<>() {
-            @Override
-            public String toString(Number value) {
-                return value == null ? "" : value.toString();
-            }
-
-            @Override
-            public Number fromString(String string) {
-                if (string == null || string.trim().isEmpty()) {
-                    return 0.0;
-                }
-                try {
-                    return Double.parseDouble(string);
-                } catch (NumberFormatException e) {
-                    return 0.0;
-                }
-            }
-        };
-
-        StringConverter<Number> intConverter = new StringConverter<>() {
-            @Override
-            public String toString(Number value) {
-                return value == null ? "" : value.toString();
-            }
-
-            @Override
-            public Number fromString(String string) {
-                if (string == null || string.trim().isEmpty()) {
-                    return 0;
-                }
-                try {
-                    return Integer.parseInt(string);
-                } catch (NumberFormatException e) {
-                    return 0;
-                }
-            }
-        };
-        
-        // Use the StringProperty-specific binding method with the converter
-        Bindings.bindBidirectional(distanceTextField.textProperty(), viewModel.distanceProperty(), doubleConverter);
-        
-        Bindings.bindBidirectional(estimatedTimeTextField.textProperty(), viewModel.estimatedTimeProperty(), intConverter);
         Bindings.bindBidirectional(routeInfoTextArea.textProperty(), viewModel.routeInformationProperty());
         
         // Add listener for validation errors
@@ -186,7 +122,6 @@ public class EditTourController {
                 alert.showAndWait();
             }
         });
-
 
         // Set up the suggestions popup for the 'startLocation' and 'endLocation' fields
         viewModel.getFromSuggestions().addListener((ListChangeListener<Location>) change -> {
@@ -232,39 +167,72 @@ public class EditTourController {
         });
     }
 
-    private void validateDistanceField() {
-        String text = distanceTextField.getText();
-        if (!text.trim().isEmpty()) {
-            try {
-                Double.parseDouble(text);
-            } catch (NumberFormatException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Input Error");
-                alert.setHeaderText("Invalid input");
-                alert.setContentText("Distance must be a valid number.");
-                alert.showAndWait();
-                
-                // Reset endLocation the previous valid value
-                distanceTextField.setText(String.valueOf(viewModel.distanceProperty().get()));
-            }
+    // validate name field
+    private boolean validateNameField() {
+        if(tourNameTextField.getText().isEmpty()) {
+            showValidationError("Tour name cannot be empty.");
+            return false;
         }
+        return true;
     }
 
-    private void validateEstimatedTimeField() {
-        String text = estimatedTimeTextField.getText();
-        if (!text.trim().isEmpty()) {
-            try {
-                Integer.parseInt(text);
-            } catch (NumberFormatException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Input Error");
-                alert.setHeaderText("Invalid input");
-                alert.setContentText("Estimated time must be a valid integer.");
-                alert.showAndWait();
-
-                // Reset endLocation the previous valid value
-                estimatedTimeTextField.setText(String.valueOf(viewModel.estimatedTimeProperty().get()));
-            }
+    // validate description field
+    private boolean validateDescriptionField() {
+        if(tourDescriptionTextArea.getText().isEmpty()) {
+            showValidationError("Tour description cannot be empty.");
+            return false;
         }
+        return true;
+    }
+
+    // validate from field
+    private boolean validateFromField() {
+        if(fromTextField.getText().isEmpty()) {
+            showValidationError("Start location cannot be empty.");
+            return false;
+        }
+
+        // check if the location has latitude and longitude
+        Location fromLocation = viewModel.fromProperty().get();
+        if (fromLocation == null || fromLocation.getLatitude() == 0 || fromLocation.getLongitude() == 0) {
+            showValidationError("Please select a start location from the suggestions.");
+            return false;
+        }
+
+        return true;
+    }
+
+    // validate to field
+    private boolean validateToField() {
+        if(toTextField.getText().isEmpty()) {
+            showValidationError("End location cannot be empty.");
+            return false;
+        }
+
+        // check if the location has latitude and longitude
+        Location toLocation = viewModel.toProperty().get();
+        if (toLocation == null || toLocation.getLatitude() == 0 || toLocation.getLongitude() == 0) {
+            showValidationError("Please select an end location from the suggestions.");
+            return false;
+        }
+        return true;
+    }
+
+    // validate transport type field
+    private boolean validateTransportTypeField() {
+        if (transportTypeComboBox.getValue() == null || transportTypeComboBox.getValue().isEmpty()) {
+            showValidationError("Transport type cannot be empty.");
+            return false;
+        }
+        return true;
+    }
+
+
+    private void showValidationError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Validation Error");
+        alert.setHeaderText("Invalid Input");
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

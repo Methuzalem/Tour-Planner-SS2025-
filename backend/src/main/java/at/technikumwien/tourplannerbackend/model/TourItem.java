@@ -47,7 +47,7 @@ public class TourItem {
     private Double distance;
 
     @Column(name = "estimated_time")
-    private Integer estimatedTime;
+    private Double estimatedTime;
 
     @Column(name = "route_information")
     private String routeInformation;
@@ -64,7 +64,7 @@ public class TourItem {
             Location endLocation,
             String transportType,
             Double distance,
-            Integer estimatedTime,
+            Double estimatedTime,
             String routeInformation
     ) {
         this.id = id;
@@ -138,11 +138,11 @@ public class TourItem {
         this.distance = distance;
     }
 
-    public Integer getEstimatedTime() {
+    public double getEstimatedTime() {
         return estimatedTime;
     }
 
-    public void setEstimatedTime(Integer estimatedTime) {
+    public void setEstimatedTime(double estimatedTime) {
         this.estimatedTime = estimatedTime;
     }
 

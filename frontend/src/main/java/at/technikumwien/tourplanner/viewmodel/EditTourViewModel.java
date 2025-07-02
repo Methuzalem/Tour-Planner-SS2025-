@@ -32,8 +32,6 @@ public class EditTourViewModel {
     private final SimpleObjectProperty<Location> from = new SimpleObjectProperty<Location>(null);
     private final SimpleObjectProperty<Location> to = new SimpleObjectProperty<Location>(null);
     private final SimpleStringProperty transportType = new SimpleStringProperty("");
-    private final SimpleDoubleProperty distance = new SimpleDoubleProperty(0.0);
-    private final SimpleIntegerProperty estimatedTime = new SimpleIntegerProperty(0);
     private final SimpleStringProperty routeInformation = new SimpleStringProperty("");
 
     // Autocomplete suggestions
@@ -84,14 +82,6 @@ public class EditTourViewModel {
         return transportType;
     }
 
-    public DoubleProperty distanceProperty() {
-        return distance;
-    }
-
-    public SimpleIntegerProperty estimatedTimeProperty() {
-        return estimatedTime;
-    }
-
     public SimpleStringProperty routeInformationProperty() {
         return routeInformation;
     }
@@ -113,6 +103,12 @@ public class EditTourViewModel {
             resetFormFields();
             return;
         }
+
+        System.out.println("Loading tour...");
+        System.out.println(tour.startLocation().getLatitude());
+        System.out.println(tour.startLocation().getLongitude());
+        System.out.println(tour.endLocation().getLatitude());
+        System.out.println(tour.endLocation().getLongitude());
         
         id.set(tour.id());
         name.set(tour.name());
@@ -120,18 +116,10 @@ public class EditTourViewModel {
         from.set(tour.startLocation());
         to.set(tour.endLocation());
         transportType.set(tour.transportType());
-        distance.set(tour.distance());
-        estimatedTime.set(tour.estimatedTime());
         routeInformation.set(tour.routeInformation());
     }
 
     public void saveTour() {
-        // Validate input before creating a tour
-        if (!validateInputs()) {
-            validationErrorEvent.firePropertyChange(Event.VALIDATION_ERROR, null, null);
-            return;
-        }
-        
         TourItem tourItem = new TourItem(
             id.get(),
             name.get(),
@@ -139,8 +127,8 @@ public class EditTourViewModel {
             from.get(),
             to.get(),
             transportType.get(),
-            distance.get(),
-            estimatedTime.get(),
+            0.0,
+            0,
             routeInformation.get()
         );
         
@@ -148,47 +136,6 @@ public class EditTourViewModel {
 
         // Reset all form fields
         resetFormFields();
-    }
-    
-    private boolean validateInputs() {
-        // Simple validation endLocation check that fields meet their type requirements
-        try {
-            // Check that name, startLocation and endLocation are not empty
-            if (name.get() == null || name.get().trim().isEmpty() ||
-                from.get() == null || from.get().getDisplayName().trim().isEmpty() ||
-                to.get() == null || to.get().getDisplayName().trim().isEmpty()) {
-                return false;
-            }
-            
-            // Make sure distance is a valid number
-            if (distance.get() < 0) {
-                return false;
-            }
-
-            // Make sure estimated time is a valid non-negative integer
-            if (estimatedTime.get() < 0) {
-                return false;
-            }
-
-            // Make sure transport type is not empty
-            if (transportType.get() == null || transportType.get().trim().isEmpty()) {
-                return false;
-            }
-
-            // make sure startLocation has latitude and longitude
-            if (from.get().getLatitude() == 0.0 && from.get().getLongitude() == 0.0) {
-                return false;
-            }
-
-            // make sure endLocation has latitude and longitude
-            if (to.get().getLatitude() == 0.0 && to.get().getLongitude() == 0.0) {
-                return false;
-            }
-            
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     private void resetFormFields() {
@@ -198,8 +145,6 @@ public class EditTourViewModel {
         from.set(null);
         to.set(null);
         transportType.set("");
-        distance.set(0.0);
-        estimatedTime.set(0);
         routeInformation.set("");
     }
 
@@ -283,14 +228,5 @@ public class EditTourViewModel {
         };
 
         toSuggestionsFuture = debounceToExecutor.schedule(task, 500, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Shut down the executor service when no longer needed
-     */
-    public void shutdown() {
-        executorService.shutdown();
-        debounceFromExecutor.shutdown();
-        debounceToExecutor.shutdown();
     }
 }

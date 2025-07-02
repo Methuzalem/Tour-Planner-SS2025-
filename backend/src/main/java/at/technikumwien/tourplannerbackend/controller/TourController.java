@@ -24,10 +24,6 @@ public class TourController {
 
     @PostMapping("/tours")
     public TourItem saveTour(@RequestBody TourItem tour) {
-        System.out.println(tour.getStartLocation().getDisplayName());
-        System.out.println(tour.getStartLocation().getLatitude());
-        System.out.println(tour.getStartLocation().getLongitude());
-
         return tourService.saveTour(tour);
     }
 
