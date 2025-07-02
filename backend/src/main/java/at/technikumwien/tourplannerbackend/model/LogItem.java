@@ -22,7 +22,6 @@ public class LogItem {
 
     private Double difficulty;
 
-    @Column(columnDefinition = "TEXT")
     private String comment;
 
     @Column(name = "total_time")
