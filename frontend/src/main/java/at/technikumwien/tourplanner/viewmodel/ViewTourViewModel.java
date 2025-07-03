@@ -1,6 +1,7 @@
 package at.technikumwien.tourplanner.viewmodel;
 
 import at.technikumwien.tourplanner.model.TourItem;
+import at.technikumwien.tourplanner.service.ReportService;
 import at.technikumwien.tourplanner.service.TourManager;
 import at.technikumwien.tourplanner.utils.Event;
 import javafx.beans.property.ObjectProperty;
@@ -14,10 +15,12 @@ public class ViewTourViewModel {
     private final ObjectProperty<TourItem> currentTour = new SimpleObjectProperty<>(null);
     private final PropertyChangeSupport editTourEvent = new PropertyChangeSupport(this);
     private TourManager tourManager;
+    private ReportService reportService;
 
     
-    public ViewTourViewModel(TourManager tourManager) {
+    public ViewTourViewModel(TourManager tourManager, ReportService reportService) {
         this.tourManager = tourManager;
+        this.reportService = reportService;
     }
 
     // Proper JavaFX property accessor method
@@ -54,5 +57,35 @@ public class ViewTourViewModel {
     
     public void addEditTourListener(PropertyChangeListener listener) {
         editTourEvent.addPropertyChangeListener(listener);
+    }
+
+    public void generateOverviewReport() {
+        if (currentTour.get() != null) {
+            try {
+            // Generate a report for the current tour
+            reportService.getTourOverviewReport(currentTour.get().id());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Failed to generate report for tour: " + currentTour.get().name(), e);
+            }
+        } else {
+            throw new IllegalStateException("No tour selected to generate report.");
+        }
+    }
+
+    public void generateSummaryReport() {
+        if (currentTour.get() != null) {
+            try {
+                // Generate a summary report for the current tour
+                reportService.getTourSummaryReport(currentTour.get().id());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Failed to generate summary report for tour: " + currentTour.get().name(), e);
+            }
+        } else {
+            throw new IllegalStateException("No tour selected to generate summary report.");
+        }
     }
 }

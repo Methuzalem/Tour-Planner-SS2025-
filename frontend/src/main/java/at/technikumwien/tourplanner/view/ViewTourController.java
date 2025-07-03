@@ -171,4 +171,16 @@ public class ViewTourController {
             viewModel.deleteCurrentTour();
         }
     }
+
+    @FXML
+    protected void onOverviewReportButtonClick() {
+        // Call the view model method to generate the overview report for the current tour
+        viewModel.generateOverviewReport();
+    }
+
+    @FXML
+    protected void onSummaryReportButtonClick() {
+        // Call the view model method to generate the summary report for the current tour
+        viewModel.generateSummaryReport();
+    }
 }
