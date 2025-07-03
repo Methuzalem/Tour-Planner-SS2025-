@@ -1,32 +1,64 @@
 package at.technikumwien.tourplanner.viewmodel;
 
+import at.technikumwien.tourplanner.model.Location;
 import at.technikumwien.tourplanner.model.TourItem;
+import at.technikumwien.tourplanner.service.RouteService;
 import at.technikumwien.tourplanner.service.TourManager;
 import at.technikumwien.tourplanner.utils.Event;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class EditTourViewModel {
     private final TourManager tourManager;
+    private final RouteService routeService;
     private final PropertyChangeSupport cancelEditEvent = new PropertyChangeSupport(this);
     private final PropertyChangeSupport validationErrorEvent = new PropertyChangeSupport(this);
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final ScheduledExecutorService debounceFromExecutor = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService debounceToExecutor = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledFuture<?> fromSuggestionsFuture;
+    private ScheduledFuture<?> toSuggestionsFuture;
 
     // Properties for all tour fields
     private final SimpleStringProperty id = new SimpleStringProperty(null);
     private final SimpleStringProperty name = new SimpleStringProperty("");
     private final SimpleStringProperty description = new SimpleStringProperty("");
-    private final SimpleStringProperty from = new SimpleStringProperty("");
-    private final SimpleStringProperty to = new SimpleStringProperty("");
+    private final SimpleObjectProperty<Location> from = new SimpleObjectProperty<Location>(null);
+    private final SimpleObjectProperty<Location> to = new SimpleObjectProperty<Location>(null);
     private final SimpleStringProperty transportType = new SimpleStringProperty("");
-    private final SimpleDoubleProperty distance = new SimpleDoubleProperty(0.0);
-    private final SimpleStringProperty estimatedTime = new SimpleStringProperty("");
     private final SimpleStringProperty routeInformation = new SimpleStringProperty("");
-    private final SimpleStringProperty imageUrl = new SimpleStringProperty("");
 
-    public EditTourViewModel(TourManager tourManager) {
+    // Autocomplete suggestions
+    private final ObservableList<Location> fromSuggestions = FXCollections.observableArrayList();
+    private final ObservableList<Location> toSuggestions = FXCollections.observableArrayList();
+
+    // Additional constructor for testing/dependency injection
+    public EditTourViewModel(TourManager tourManager, RouteService routeService) {
         this.tourManager = tourManager;
+        this.routeService = routeService;
+
+        fromProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("From suggestions need endLocation be updated");
+            if (newValue != null && newValue.getDisplayName().trim().length() >= 3) {
+                fetchFromLocationSuggestions(newValue.getDisplayName());
+            } else {
+                fromSuggestions.clear();
+            }
+        });
+
+        toProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && newValue.getDisplayName().trim().length() >= 3) {
+                fetchToLocationSuggestions(newValue.getDisplayName());
+            } else {
+                toSuggestions.clear();
+            }
+        });
     }
 
     // Property getters
@@ -38,11 +70,11 @@ public class EditTourViewModel {
         return description;
     }
 
-    public SimpleStringProperty fromProperty() {
+    public SimpleObjectProperty<Location> fromProperty() {
         return from;
     }
 
-    public SimpleStringProperty toProperty() {
+    public SimpleObjectProperty<Location> toProperty() {
         return to;
     }
 
@@ -50,47 +82,44 @@ public class EditTourViewModel {
         return transportType;
     }
 
-    public DoubleProperty distanceProperty() {
-        return distance;
-    }
-
-    public SimpleStringProperty estimatedTimeProperty() {
-        return estimatedTime;
-    }
-
     public SimpleStringProperty routeInformationProperty() {
         return routeInformation;
     }
 
+    public ObservableList<Location> getFromSuggestions() {
+        return fromSuggestions;
+    }
+
+    public ObservableList<Location> getToSuggestions() {
+        return toSuggestions;
+    }
+
     /**
-     * Load all properties from the provided TourItem
-     * @param tour The tour to load data from
+     * Load all properties startLocation the provided TourItem
+     * @param tour The tour endLocation load data startLocation
      */
     public void loadTour(TourItem tour) {
         if (tour == null) {
             resetFormFields();
             return;
         }
+
+        System.out.println("Loading tour...");
+        System.out.println(tour.startLocation().getLatitude());
+        System.out.println(tour.startLocation().getLongitude());
+        System.out.println(tour.endLocation().getLatitude());
+        System.out.println(tour.endLocation().getLongitude());
         
         id.set(tour.id());
         name.set(tour.name());
         description.set(tour.description());
-        from.set(tour.from());
-        to.set(tour.to());
+        from.set(tour.startLocation());
+        to.set(tour.endLocation());
         transportType.set(tour.transportType());
-        distance.set(tour.distance());
-        estimatedTime.set(tour.estimatedTime());
         routeInformation.set(tour.routeInformation());
-        imageUrl.set(tour.imageUrl());
     }
 
     public void saveTour() {
-        // Validate input before creating a tour
-        if (!validateInputs()) {
-            validationErrorEvent.firePropertyChange(Event.VALIDATION_ERROR, null, null);
-            return;
-        }
-        
         TourItem tourItem = new TourItem(
             id.get(),
             name.get(),
@@ -98,10 +127,9 @@ public class EditTourViewModel {
             from.get(),
             to.get(),
             transportType.get(),
-            distance.get(),
-            estimatedTime.get(),
-            routeInformation.get(),
-            imageUrl.get()
+            0.0,
+            0,
+            routeInformation.get()
         );
         
         this.tourManager.saveTour(tourItem);
@@ -109,37 +137,14 @@ public class EditTourViewModel {
         // Reset all form fields
         resetFormFields();
     }
-    
-    private boolean validateInputs() {
-        // Simple validation to check that fields meet their type requirements
-        try {
-            // Check that name, from and to are not empty
-            if (name.get() == null || name.get().trim().isEmpty() ||
-                from.get() == null || from.get().trim().isEmpty() ||
-                to.get() == null || to.get().trim().isEmpty()) {
-                return false;
-            }
-            
-            // Make sure distance is a valid number
-            if (distance.get() < 0) {
-                return false;
-            }
-            
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
 
     private void resetFormFields() {
         id.set(null);
         name.set("");
         description.set("");
-        from.set("");
-        to.set("");
+        from.set(null);
+        to.set(null);
         transportType.set("");
-        distance.set(0.0);
-        estimatedTime.set("");
         routeInformation.set("");
     }
 
@@ -157,5 +162,71 @@ public class EditTourViewModel {
     
     public void addValidationErrorListener(PropertyChangeListener listener) {
         validationErrorEvent.addPropertyChangeListener(listener);
+    }
+
+    /**
+     * Fetch location suggestions for the "From" field
+     * @param query The search query text
+     */
+    public void fetchFromLocationSuggestions(String query) {
+        System.out.println("Fetching location suggestions for query: " + query);
+
+        // If the query is equal to a previously fetched suggestion, do not fetch again
+        if (fromSuggestions.stream().anyMatch(location -> location.getDisplayName().equalsIgnoreCase(query))) {
+            System.out.println("Query matches existing suggestion, skipping fetch.");
+            return;
+        }
+
+        // Cancel any previously scheduled task
+        if (fromSuggestionsFuture != null && !fromSuggestionsFuture.isDone()) {
+            fromSuggestionsFuture.cancel(true);
+        }
+
+        // Schedule a new task with a delay
+        Runnable task = () -> {
+            List<Location> suggestions = routeService.getLocationSuggestions(query);
+
+            // Update the UI on the JavaFX Application Thread
+            javafx.application.Platform.runLater(() -> {
+                System.out.println("Received suggestions: " + suggestions);
+                fromSuggestions.clear();
+                fromSuggestions.addAll(suggestions);
+            });
+        };
+
+        fromSuggestionsFuture = debounceFromExecutor.schedule(task, 500, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Fetch location suggestions for the "To" field
+     * @param query The search query text
+     */
+    public void fetchToLocationSuggestions(String query) {
+        System.out.println("Fetching location suggestions for query: " + query);
+
+        // If the query is equal to a previously fetched suggestion, do not fetch again
+        if (toSuggestions.stream().anyMatch(location -> location.getDisplayName().equalsIgnoreCase(query))) {
+            System.out.println("Query matches existing suggestion, skipping fetch.");
+            return;
+        }
+
+        // Cancel any previously scheduled task
+        if (toSuggestionsFuture != null && !toSuggestionsFuture.isDone()) {
+            toSuggestionsFuture.cancel(true);
+        }
+
+        // Schedule a new task with a delay
+        Runnable task = () -> {
+            List<Location> suggestions = routeService.getLocationSuggestions(query);
+
+            // Update the UI on the JavaFX Application Thread
+            javafx.application.Platform.runLater(() -> {
+                System.out.println("Received suggestions: " + suggestions);
+                toSuggestions.clear();
+                toSuggestions.addAll(suggestions);
+            });
+        };
+
+        toSuggestionsFuture = debounceToExecutor.schedule(task, 500, TimeUnit.MILLISECONDS);
     }
 }

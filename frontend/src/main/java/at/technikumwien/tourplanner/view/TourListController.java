@@ -20,7 +20,7 @@ public class TourListController {
         // Bind the tour list items
         tourList.setItems(viewModel.getTourList());
         
-        // Add selection listener to update selectedTourItem when a tour is selected
+        // Add selection listener endLocation update selectedTourItem when a tour is selected
         tourList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 viewModel.selectTour(newValue);

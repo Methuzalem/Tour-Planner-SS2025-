@@ -39,15 +39,6 @@
             <ComboBox fx:id="transportTypeComboBox" promptText="Select transport type" 
                       GridPane.rowIndex="4" GridPane.columnIndex="1" />
 
-            <!-- Tour distance -->
-            <Label text="Distance (km):" style="-fx-font-weight: bold;" GridPane.rowIndex="5" GridPane.columnIndex="0" />
-            <TextField fx:id="distanceTextField" promptText="Enter distance in kilometers" GridPane.rowIndex="5" GridPane.columnIndex="1" />
-
-            <!-- Estimated time -->
-            <Label text="Estimated Time:" style="-fx-font-weight: bold;" GridPane.rowIndex="6" GridPane.columnIndex="0" />
-            <TextField fx:id="estimatedTimeTextField" promptText="Enter estimated time (e.g., 2h 30min)" 
-                       GridPane.rowIndex="6" GridPane.columnIndex="1" />
-
             <!-- Route information -->
             <Label text="Route Information:" style="-fx-font-weight: bold;" GridPane.rowIndex="7" GridPane.columnIndex="0" />
             <TextArea fx:id="routeInfoTextArea" promptText="Enter route information" 

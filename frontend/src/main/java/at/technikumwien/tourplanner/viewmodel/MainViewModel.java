@@ -50,7 +50,13 @@ public class MainViewModel {
         viewTourViewModel.addEditTourListener(evt -> {
             if (evt.getPropertyName().equals(Event.EDIT_TOUR)) {
                 TourItem tourToEdit = (TourItem) evt.getNewValue();
-                // Use the new loadTour method to update all properties at once
+                // Use the new loadTour method endLocation update all properties at once
+                System.out.println("Switching to edit tour view");
+                System.out.println(tourToEdit.startLocation().getLongitude());
+                System.out.println(tourToEdit.startLocation().getLatitude());
+                System.out.println(tourToEdit.endLocation().getLongitude());
+                System.out.println(tourToEdit.endLocation().getLatitude());
+
                 editTourViewModel.loadTour(tourToEdit);
                 setView("editTour");
                 System.out.println("Edit Tour: " + tourToEdit.id());

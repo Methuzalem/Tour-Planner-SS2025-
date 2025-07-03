@@ -8,10 +8,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 
-import java.io.File;
 import java.util.Optional;
 
 public class ViewTourController {
@@ -26,16 +26,20 @@ public class ViewTourController {
     @FXML private Button editButton;
     @FXML private Button deleteButton;
     @FXML private ImageView tourImageView;
-    
+
     private final ViewTourViewModel viewModel;
+
+    @FXML
+    private WebView webView;
+    private WebEngine webEngine;
 
     public ViewTourController(ViewTourViewModel viewModel) {
         this.viewModel = viewModel;
     }
-    
+
     @FXML
     public void initialize() {
-        // Bind all tour details to their corresponding labels using StringBinding
+        // Bind all tour details endLocation their corresponding labels using StringBinding
         tourNameLabel.textProperty().bind(
             Bindings.createStringBinding(
                 () -> {
@@ -45,7 +49,7 @@ public class ViewTourController {
                 viewModel.currentTourProperty()
             )
         );
-        
+
         tourDescriptionLabel.textProperty().bind(
             Bindings.createStringBinding(
                 () -> {
@@ -55,27 +59,27 @@ public class ViewTourController {
                 viewModel.currentTourProperty()
             )
         );
-        
+
         fromLabel.textProperty().bind(
             Bindings.createStringBinding(
                 () -> {
                     TourItem tour = viewModel.getCurrentTour();
-                    return tour != null ? tour.from() : "";
+                    return tour != null ? tour.startLocation().getDisplayName() : "";
                 },
                 viewModel.currentTourProperty()
             )
         );
-        
+
         toLabel.textProperty().bind(
             Bindings.createStringBinding(
                 () -> {
                     TourItem tour = viewModel.getCurrentTour();
-                    return tour != null ? tour.to() : "";
+                    return tour != null ? tour.endLocation().getDisplayName() : "";
                 },
                 viewModel.currentTourProperty()
             )
         );
-        
+
         transportTypeLabel.textProperty().bind(
             Bindings.createStringBinding(
                 () -> {
@@ -85,7 +89,7 @@ public class ViewTourController {
                 viewModel.currentTourProperty()
             )
         );
-        
+
         distanceLabel.textProperty().bind(
             Bindings.createStringBinding(
                 () -> {
@@ -95,17 +99,17 @@ public class ViewTourController {
                 viewModel.currentTourProperty()
             )
         );
-        
+
         estimatedTimeLabel.textProperty().bind(
             Bindings.createStringBinding(
                 () -> {
                     TourItem tour = viewModel.getCurrentTour();
-                    return tour != null ? tour.estimatedTime() : "";
+                    return tour != null ? tour.estimatedTime().toString() : "";
                 },
                 viewModel.currentTourProperty()
             )
         );
-        
+
         routeInformationLabel.textProperty().bind(
             Bindings.createStringBinding(
                 () -> {
@@ -116,27 +120,39 @@ public class ViewTourController {
             )
         );
 
-        // Bind the image view to the tour's image URL
-        viewModel.currentTourProperty().addListener((observable, oldValue, newValue) -> {
-            tourImageView.setImage(null);
-            if (newValue != null && newValue.imageUrl() != null && !newValue.imageUrl().isEmpty()) {
-                System.out.println("Loading image from: " + newValue.imageUrl());
-                Image image = new Image(newValue.imageUrl(), false); // synchronous load
-                if (image.isError()) {
-                    System.err.println("Image load error: " + image.getException());
-                }
-                tourImageView.setImage(image);
-            }
-        });
-        
         // Disable the buttons if no tour is selected
         editButton.disableProperty().bind(Bindings.isNull(viewModel.currentTourProperty()));
         deleteButton.disableProperty().bind(Bindings.isNull(viewModel.currentTourProperty()));
+
+        // Initialize the WebView and load the tour map
+        System.out.println("MapController");
+        webEngine = webView.getEngine(); // Initialize the WebEngine from the injected WebView
+
+        // Load local HTML file or inline HTML with Leaflet
+        webEngine.load(getClass().getResource("/at/technikumwien/tourplanner/map.html").toExternalForm());
+
+        // wait for changes of the currentTourProperty and update the map accordingly
+        viewModel.currentTourProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                // Update the map with the new tour's route
+                String js = String.format("""
+                    updateRoute([
+                        [%s, %s],
+                        [%s, %s]
+                    ]);
+                """,
+                newValue.startLocation().getLatitude(), newValue.startLocation().getLongitude(),
+                newValue.endLocation().getLatitude(), newValue.endLocation().getLongitude());
+
+                webEngine.executeScript(js);
+            }
+        });
     }
-    
+
+
     @FXML
     protected void onEditButtonClick() {
-        // Call the view model method to switch to edit mode for the current tour
+        // Call the view model method endLocation switch endLocation edit mode for the current tour
         viewModel.editCurrentTour();
     }
     
