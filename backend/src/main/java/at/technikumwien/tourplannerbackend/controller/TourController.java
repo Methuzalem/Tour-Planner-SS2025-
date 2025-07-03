@@ -1,11 +1,9 @@
 package at.technikumwien.tourplannerbackend.controller;
 
 import at.technikumwien.tourplannerbackend.model.TourItem;
-import at.technikumwien.tourplannerbackend.repository.TourItemRepository;
 import at.technikumwien.tourplannerbackend.service.TourService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

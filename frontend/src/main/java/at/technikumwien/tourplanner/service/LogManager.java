@@ -2,28 +2,47 @@ package at.technikumwien.tourplanner.service;
 
 import at.technikumwien.tourplanner.model.LogItem;
 import at.technikumwien.tourplanner.utils.Event;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.time.LocalDate;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.UUID;
 
 public class LogManager {
+    private final ObservableList<LogItem> logList = FXCollections.observableArrayList();
     private final PropertyChangeSupport createNewLogEvent = new PropertyChangeSupport(this);
 
-    LocalDate datum1 = LocalDate.of(2025, 11, 15);
-    LocalDate datum2 = LocalDate.of(2025, 11, 16);
-    LocalDate datum3 = LocalDate.of(2025, 11, 17);
+    public LogManager() {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/logs"))
+                .GET()
+                .build();
 
-    private ObservableList<LogItem> logList = FXCollections.observableArrayList(
-            new LogItem("1",datum1, 10.00, "Dies ist meine Notiz für eine schwere Route zum 15.11.2025!", "10.5", "2:30", "5"),
-            new LogItem("1",datum2, 8.00, "Dies ist meine Notiz für eine mittlere Route zum 16.11.2025!", "10.5", "2:30", "5"),
-            new LogItem("1",datum3, 5.00, "Dies ist meine Notiz für eine leichte Route zum 17.11.2025!", "10.5", "2:30", "5"),
-            new LogItem("2",datum2, 8.00, "Dies ist meine Notiz für eine mittlere Route zum 16.11.2025!", "5.00", "1:30", "3"),
-            new LogItem("3",datum3, 2.00, "Dies ist meine Notiz für eine leichte Route zum 17.11.2025!", "3.5", "0:30", "5")
-    );
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // parse the string with jackson
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<LogItem> logs = objectMapper
+                    .registerModule(new JavaTimeModule())
+                    .readValue(response.body(), new TypeReference<List<LogItem>>() {
+                    });
+            logList.setAll(logs);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error fetching logs: " + e.getMessage());
+        }
+    }
 
     // read the list of tours
     public ObservableList<LogItem> getLogList() {
@@ -35,6 +54,10 @@ public class LogManager {
     }
 
     public void saveLog(LogItem logItem) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        HttpClient client = HttpClient.newHttpClient();
+
         if (logItem.logId() == null) {
             String newId = UUID.randomUUID().toString();
             LogItem newItem = new LogItem(
@@ -47,30 +70,81 @@ public class LogManager {
                     logItem.totalDistance(),
                     logItem.rating()
             );
-            logList.add(newItem);
-        } else {
-            //update if existing
-            for (int i = 0; i < logList.size(); i++) {
-                if (logList.get(i).logId().equals(logItem.logId())) {
-                    logList.set(i, logItem);
-                    createNewLogEvent.firePropertyChange(Event.REFRESH_LOG, null, logItem);
-                    return;
-                }
+
+            try {
+                String requestBody = mapper.writeValueAsString(newItem);
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create("http://localhost:8080/logs"))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                        .build();
+
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                logList.add(newItem);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Error posting log: " + e.getMessage());
             }
+
+        } else {
+            try {
+                String requestBody = mapper.writeValueAsString(logItem);
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create("http://localhost:8080/logs/" + logItem.logId()))
+                        .header("Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody))
+                        .build();
+
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+                for (int i = 0; i < logList.size(); i++) {
+                    if (logList.get(i).logId().equals(logItem.logId())) {
+                        logList.set(i, logItem);
+                        break;
+                    }
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Error updating log: " + e.getMessage());
+            }
+
+            createNewLogEvent.firePropertyChange(Event.REFRESH_LOG, null, logItem);
         }
 
         createNewLogEvent.firePropertyChange(Event.REFRESH_LOG, null, logItem);
     }
 
     public void deleteLog(LogItem logItem) {
-        if (logItem == null) {
+        if (logItem == null || logItem.logId() == null) {
             return;
         }
-        for (int i = 0; i < logList.size(); i++) {
-            if (logList.get(i).logId().equals(logItem.logId())) {
-                logList.remove(i);
+
+        HttpClient client = HttpClient.newHttpClient();
+        String url = "http://localhost:8080/logs/" + logItem.logId();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .DELETE()
+                .build();
+
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                logList.removeIf(log -> log.logId().equals(logItem.logId()));
                 createNewLogEvent.firePropertyChange(Event.REFRESH_LOG, null, logItem);
+            } else {
+                System.out.println("Failed to delete log: " + response.statusCode());
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error deleting log: " + e.getMessage());
         }
     }
 }
