@@ -31,8 +31,11 @@ public class TourService {
         double duration = this.openRouteService.calculateDuration(tour.getStartLocation(), tour.getEndLocation());
         tour.setEstimatedTime(duration);
 
-        logger.debug("Calculated distance: {}", distance);
-        logger.debug("Estimated duration: {}", duration);
+        //logging
+        double durationInHours = duration/3600;
+        double distanceInKilometers = distance/1000;
+        logger.debug("Calculated distance: {} km", distanceInKilometers);
+        logger.debug("Estimated duration: {} h", durationInHours);
 
         TourItem saved = repository.save(tour);
         logger.info("Tour saved successfully with ID: {}", saved.getId());
