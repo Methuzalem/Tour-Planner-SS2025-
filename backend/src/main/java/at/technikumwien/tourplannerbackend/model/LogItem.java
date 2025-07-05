@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 import jakarta.persistence.Table;
+import jakarta.persistence.criteria.CriteriaBuilder;
+
 import java.time.LocalDate;
 
 @Entity
@@ -24,15 +26,16 @@ public class LogItem {
 
     private String comment;
 
-    @Column(name = "total_time")
-    private String totalTime;
+    @Column(name = "total_time", columnDefinition = "INTEGER")
+    private Integer totalTime;
 
-    private String rating;
+    @Column(name = "rating", columnDefinition = "INTEGER")
+    private Integer rating;
 
     public LogItem() {}
 
     public LogItem(String logId, String tourId, LocalDate date, Double difficulty, String comment,
-                   String totalTime, String rating) {
+                   Integer totalTime, Integer rating) {
         this.logId = logId;
         this.tourId = tourId;
         this.date = date;
@@ -82,19 +85,19 @@ public class LogItem {
         this.comment = comment;
     }
 
-    public String getTotalTime() {
+    public Integer getTotalTime() {
         return totalTime;
     }
 
-    public void setTotalTime(String totalTime) {
+    public void setTotalTime(Integer totalTime) {
         this.totalTime = totalTime;
     }
 
-    public String getRating() {
+    public Integer getRating() {
         return rating;
     }
 
-    public void setRating(String rating) {
+    public void setRating(Integer rating) {
         this.rating = rating;
     }
 }

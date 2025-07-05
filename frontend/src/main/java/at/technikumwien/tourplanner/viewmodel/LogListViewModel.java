@@ -109,7 +109,7 @@ public class LogListViewModel {
                 .filter(log ->
                         log.getComment().toLowerCase().contains(lowerQuery) ||
                                 log.getRating().toLowerCase().contains(lowerQuery) ||
-                                log.getTotalTime().toLowerCase().contains(lowerQuery) ||
+                                String.valueOf(log.getTotalTime()).toLowerCase().contains(lowerQuery) ||
                                 log.getDate().toString().contains(lowerQuery)
                 )
                 .toList();

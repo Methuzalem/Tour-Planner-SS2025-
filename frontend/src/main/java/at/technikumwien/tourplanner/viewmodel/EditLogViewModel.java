@@ -22,7 +22,7 @@ public class EditLogViewModel {
     private final ObjectProperty<LocalDate> date = new SimpleObjectProperty<>();
     private final StringProperty comment = new SimpleStringProperty();
     private final DoubleProperty difficulty = new SimpleDoubleProperty();
-    private final StringProperty totalTime = new SimpleStringProperty();
+    private final ObjectProperty<Integer> totalTime = new SimpleObjectProperty<>();
     private final ObjectProperty<RatingOption> rating = new SimpleObjectProperty<>();
 
     public EditLogViewModel(LogManager logManager) {this.logManager = logManager;}
@@ -33,7 +33,7 @@ public class EditLogViewModel {
     public ObjectProperty<LocalDate> dateProperty() { return date; }
     public StringProperty commentProperty() { return comment; }
     public DoubleProperty difficultyProperty() { return difficulty; }
-    public StringProperty totalTimeProperty() { return totalTime; }
+    public ObjectProperty<Integer> totalTimeProperty() {return totalTime; }
     public ObjectProperty<RatingOption> ratingProperty() { return rating; }
 
 
@@ -54,7 +54,7 @@ public class EditLogViewModel {
         date.set(null);
         comment.set("");
         difficulty.set(0.00);
-        totalTime.set("");
+        totalTime.set(null);
         rating.set(null);
     }
 
@@ -72,15 +72,15 @@ public class EditLogViewModel {
     public void createNewLog() {
         LocalDate logDate = date.get();
         double diff = difficulty.get();
-        String time = totalTime.get();
+        Integer time = totalTime.get();
 
         if (logDate == null) {
             showAlert("Invalid Input", "Please enter a date.");
             return;
         }
 
-        if (time == null || time.isBlank()) {
-            showAlert("Invalid Input", "Please enter your total time!");
+        if (time == 0) {
+            showAlert("Invalid Input - Time must be greater than 0", "Please enter your total time!");
             return;
         }
 

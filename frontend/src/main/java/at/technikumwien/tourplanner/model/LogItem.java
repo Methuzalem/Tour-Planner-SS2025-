@@ -9,17 +9,17 @@ public record LogItem(
         LocalDate date,
         Double difficulty,
         String comment,
-        String totalTime,
+        Integer totalTime,
         String rating) {
 
-    public LogItem(LocalDate date){this(null, "", date, 0.00, "", "", "0");}
+    public LogItem(LocalDate date){this(null, "", date, 0.00, "", null, "0");}
 
     public LogItem(
             String tourId,
             LocalDate date,
             Double difficulty,
             String comment,
-            String totalTime,
+            Integer totalTime,
             String rating) {
         this(UUID.randomUUID().toString(), tourId, date, difficulty, comment, totalTime, rating);
     }
@@ -44,7 +44,7 @@ public record LogItem(
         return rating;
     }
 
-    public String getTotalTime() {
+    public Integer getTotalTime() {
         return totalTime;
     }
 

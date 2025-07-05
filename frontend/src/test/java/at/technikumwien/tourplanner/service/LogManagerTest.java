@@ -36,7 +36,7 @@ public class LogManagerTest {
                 LocalDate.of(2024, 5, 10),
                 3.5,
                 "Test-Kommentar",
-                "01:20",
+                60,
                 "4"
         );
 
@@ -64,7 +64,7 @@ public class LogManagerTest {
                 LocalDate.of(2024, 3, 15),
                 2.0,
                 "Old Comment",
-                "00:30",
+                30,
                 "3"
         );
         logManager.getLogList().add(existing);
@@ -75,7 +75,7 @@ public class LogManagerTest {
                 LocalDate.of(2024, 3, 15),
                 2.0,
                 "Updated Comment",
-                "00:30",
+                30,
                 "3"
         );
 
@@ -93,7 +93,7 @@ public class LogManagerTest {
                 LocalDate.of(2024, 6, 1),
                 4.0,
                 "Delete me",
-                "01:00",
+                60,
                 "5"
         );
         logManager.getLogList().add(item);

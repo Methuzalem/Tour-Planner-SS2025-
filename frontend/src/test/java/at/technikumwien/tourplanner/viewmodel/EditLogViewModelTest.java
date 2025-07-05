@@ -2,6 +2,7 @@ package at.technikumwien.tourplanner.viewmodel;
 import at.technikumwien.tourplanner.model.LogItem;
 import at.technikumwien.tourplanner.service.LogManager;
 import at.technikumwien.tourplanner.utils.Event;
+import at.technikumwien.tourplanner.utils.RatingOption;
 import at.technikumwien.tourplanner.viewmodel.EditLogViewModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ public class EditLogViewModelTest {
 
     @Test
     public void testLoadLog_PopulatesFields() {
-        LogItem log = new LogItem("log1", "tour1", LocalDate.of(2023, 1, 1), 2.5, "Nice tour", "02:00", "10km", "4");
+        LogItem log = new LogItem("log1", "tour1", LocalDate.of(2023, 1, 1), 2.5, "Nice tour", 120,  "4");
 
         viewModel.loadLog(log);
 
@@ -59,12 +60,13 @@ public class EditLogViewModelTest {
 
     @Test
     public void testCreateNewLog_SuccessfulSave() {
+
         viewModel.tourIdProperty().set("tour1");
         viewModel.dateProperty().set(LocalDate.of(2024, 12, 1));
         viewModel.difficultyProperty().set(3.0);
         viewModel.commentProperty().set("Well done");
-        viewModel.totalTimeProperty().set("01:30");
-        viewModel.ratingProperty().set("5");
+        viewModel.totalTimeProperty().set(120);
+        viewModel.ratingProperty().set(new RatingOption("5 - Sehr Gut", 5));
 
         viewModel.createNewLog();
 
