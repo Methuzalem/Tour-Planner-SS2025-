@@ -42,24 +42,6 @@ public class TourManagerTest {
         assertEquals(1, tourManager.getTourList().size());
     }
 
-    /*
-    @Test
-    public void testSaveTour_ExistingTour_UpdatesInList() {
-        Location from = new Location("Vienna", 48.2082, 16.3738);
-        Location to = new Location("Graz", 47.0707, 15.4395);
-        TourItem existing = new TourItem("123", "Old", "Desc", from, to, "Walk", 0.0, 0, "OldRoute");
-
-        tourManager.getTourList().add(existing);
-
-        TourItem updated = new TourItem("123", "Updated", "NewDesc", from, to, "Bike", 0.0, 0, "NewRoute");
-
-        TourItem result = tourManager.saveTour(updated);
-
-        assertEquals(1, tourManager.getTourList().size());
-        assertEquals("Updated", tourManager.getTourList().getFirst().name());
-    }
-    */
-
     @Test
     public void testDeleteTour_RemovesFromList() {
         TourItem tour = new TourItem("456", "ToDelete", "Info", new Location("A", 1, 1), new Location("B", 2, 2), "Car", 0.0, 0, "Info");
