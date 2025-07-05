@@ -45,7 +45,6 @@ public class LogService {
         existing.setDifficulty(updatedLog.getDifficulty());
         existing.setComment(updatedLog.getComment());
         existing.setTotalTime(updatedLog.getTotalTime());
-        existing.setTotalDistance(updatedLog.getTotalDistance());
         existing.setRating(updatedLog.getRating());
 
         repository.save(existing);

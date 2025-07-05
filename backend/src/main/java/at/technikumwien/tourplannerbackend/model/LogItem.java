@@ -27,22 +27,18 @@ public class LogItem {
     @Column(name = "total_time")
     private String totalTime;
 
-    @Column(name = "total_distance")
-    private String totalDistance;
-
     private String rating;
 
     public LogItem() {}
 
     public LogItem(String logId, String tourId, LocalDate date, Double difficulty, String comment,
-                   String totalTime, String totalDistance, String rating) {
+                   String totalTime, String rating) {
         this.logId = logId;
         this.tourId = tourId;
         this.date = date;
         this.difficulty = difficulty;
         this.comment = comment;
         this.totalTime = totalTime;
-        this.totalDistance = totalDistance;
         this.rating = rating;
     }
 
@@ -92,14 +88,6 @@ public class LogItem {
 
     public void setTotalTime(String totalTime) {
         this.totalTime = totalTime;
-    }
-
-    public String getTotalDistance() {
-        return totalDistance;
-    }
-
-    public void setTotalDistance(String totalDistance) {
-        this.totalDistance = totalDistance;
     }
 
     public String getRating() {

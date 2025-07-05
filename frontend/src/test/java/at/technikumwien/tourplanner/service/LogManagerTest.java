@@ -23,7 +23,6 @@ public class LogManagerTest {
     public void setUp() {
         logManager = new LogManager() {
             {
-                // Entferne alle geladenen Logs aus dem Konstruktor
                 getLogList().clear();
             }
         };
@@ -38,7 +37,6 @@ public class LogManagerTest {
                 3.5,
                 "Test-Kommentar",
                 "01:20",
-                "12km",
                 "4"
         );
 
@@ -67,7 +65,6 @@ public class LogManagerTest {
                 2.0,
                 "Old Comment",
                 "00:30",
-                "5km",
                 "3"
         );
         logManager.getLogList().add(existing);
@@ -79,7 +76,6 @@ public class LogManagerTest {
                 2.0,
                 "Updated Comment",
                 "00:30",
-                "5km",
                 "3"
         );
 
@@ -98,7 +94,6 @@ public class LogManagerTest {
                 4.0,
                 "Delete me",
                 "01:00",
-                "10km",
                 "5"
         );
         logManager.getLogList().add(item);
@@ -119,7 +114,7 @@ public class LogManagerTest {
     @Test
     public void testDeleteLog_NullOrMissingId_DoesNothing() {
         logManager.deleteLog(null); // kein Crash
-        logManager.deleteLog(new LogItem(null, null, null, 0.00, null, null, null, null)); // kein Crash
+        logManager.deleteLog(new LogItem(null, null, null, 0.00, null, null, null)); // kein Crash
         assertTrue(logManager.getLogList().isEmpty());
     }
 }

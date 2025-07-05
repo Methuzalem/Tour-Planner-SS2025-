@@ -67,7 +67,6 @@ public class LogManager {
                     logItem.difficulty(),
                     logItem.comment(),
                     logItem.totalTime(),
-                    logItem.totalDistance(),
                     logItem.rating()
             );
 

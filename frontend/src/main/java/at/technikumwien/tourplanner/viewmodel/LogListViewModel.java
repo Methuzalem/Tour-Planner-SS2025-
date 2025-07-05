@@ -110,7 +110,6 @@ public class LogListViewModel {
                         log.getComment().toLowerCase().contains(lowerQuery) ||
                                 log.getRating().toLowerCase().contains(lowerQuery) ||
                                 log.getTotalTime().toLowerCase().contains(lowerQuery) ||
-                                log.getTotalDistance().toLowerCase().contains(lowerQuery) ||
                                 log.getDate().toString().contains(lowerQuery)
                 )
                 .toList();

@@ -37,7 +37,6 @@ public class EditLogViewModelTest {
         assertEquals("Nice tour", viewModel.commentProperty().get());
         assertEquals(2.5, viewModel.difficultyProperty().get());
         assertEquals("02:00", viewModel.totalTimeProperty().get());
-        assertEquals("10km", viewModel.totalDistanceProperty().get());
         assertEquals("4", viewModel.ratingProperty().get());
     }
 
@@ -65,7 +64,6 @@ public class EditLogViewModelTest {
         viewModel.difficultyProperty().set(3.0);
         viewModel.commentProperty().set("Well done");
         viewModel.totalTimeProperty().set("01:30");
-        viewModel.totalDistanceProperty().set("5km");
         viewModel.ratingProperty().set("5");
 
         viewModel.createNewLog();
@@ -76,7 +74,6 @@ public class EditLogViewModelTest {
         LogItem saved = captor.getValue();
         assertEquals("tour1", saved.getTourId());
         assertEquals("01:30", saved.getTotalTime());
-        assertEquals("5km", saved.getTotalDistance());
         assertEquals("Well done", saved.getComment());
         assertEquals("5", saved.getRating());
     }

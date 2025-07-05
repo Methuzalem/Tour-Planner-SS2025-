@@ -35,19 +35,12 @@
             <TextField fx:id="totalTimeTextField" promptText="Enter your total time in h" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
 
-            <!-- Tour distance -->
-            <Label style="-fx-font-weight: bold;" text="Distance (km):" GridPane.rowIndex="5" />
-            <TextField fx:id="distanceTextField" promptText="Enter distance in kilometers" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-
-
             <!-- Transport type -->
             <Label style="-fx-font-weight: bold;" text="Rating:" GridPane.rowIndex="6" />
             <ComboBox fx:id="ratingComboBox" promptText="Select your Rating" GridPane.columnIndex="1" GridPane.rowIndex="6" />
 
 
          <rowConstraints>
-            <RowConstraints />
-            <RowConstraints />
             <RowConstraints />
             <RowConstraints />
             <RowConstraints />
