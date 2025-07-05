@@ -53,9 +53,8 @@ public class LogServiceTest {
         updated.setDate(LocalDate.of(2024, 1, 1));
         updated.setDifficulty(3.0);
         updated.setComment("New comment");
-        updated.setTotalTime("01:30");
-        updated.setTotalDistance("10km");
-        updated.setRating("5");
+        updated.setTotalTime(120);
+        updated.setRating(5);
 
         when(repositoryMock.findById("123")).thenReturn(Optional.of(existing));
 
@@ -63,7 +62,6 @@ public class LogServiceTest {
 
         assertEquals("New comment", existing.getComment());
         assertEquals("newTour", existing.getTourId());
-        assertEquals("10km", existing.getTotalDistance());
         verify(repositoryMock).save(existing);
     }
 

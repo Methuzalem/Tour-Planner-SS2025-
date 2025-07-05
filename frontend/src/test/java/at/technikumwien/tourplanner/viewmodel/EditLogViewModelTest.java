@@ -37,8 +37,8 @@ public class EditLogViewModelTest {
         assertEquals(LocalDate.of(2023, 1, 1), viewModel.dateProperty().get());
         assertEquals("Nice tour", viewModel.commentProperty().get());
         assertEquals(2.5, viewModel.difficultyProperty().get());
-        assertEquals("02:00", viewModel.totalTimeProperty().get());
-        assertEquals("4", viewModel.ratingProperty().get());
+        assertEquals(120, viewModel.totalTimeProperty().get());
+        assertEquals("Gut", viewModel.getRating().getLabel());
     }
 
     @Test
@@ -75,7 +75,7 @@ public class EditLogViewModelTest {
 
         LogItem saved = captor.getValue();
         assertEquals("tour1", saved.getTourId());
-        assertEquals("01:30", saved.getTotalTime());
+        assertEquals(120, saved.getTotalTime());
         assertEquals("Well done", saved.getComment());
         assertEquals("5", saved.getRating());
     }

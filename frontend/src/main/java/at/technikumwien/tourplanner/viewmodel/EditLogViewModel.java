@@ -119,4 +119,10 @@ public class EditLogViewModel {
     public void prepareNewLogForTour(String id) {
         this.tourId.set(id);
     }
+
+    //getter for testing
+    public RatingOption getRating() {
+        return rating.get();
+    }
+
 }
