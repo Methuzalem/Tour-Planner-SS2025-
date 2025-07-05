@@ -107,13 +107,10 @@ public class LogManager {
                     }
                 }
 
-
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("Error updating log: " + e.getMessage());
             }
-
-            createNewLogEvent.firePropertyChange(Event.REFRESH_LOG, null, logItem);
         }
 
         createNewLogEvent.firePropertyChange(Event.REFRESH_LOG, null, logItem);

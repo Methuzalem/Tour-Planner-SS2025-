@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,7 @@ public class OpenRouteService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final String apiKey;
+    private static final Logger logger = LoggerFactory.getLogger(OpenRouteService.class);
 
     public OpenRouteService(@Value("${openrouteservice.api.key}") String apiKey) {
         this.restTemplate = new RestTemplate();
@@ -40,6 +43,10 @@ public class OpenRouteService {
                     .queryParam("api_key", apiKey)
                     .queryParam("text", query)
                     .queryParam("size", 5);
+
+            //logging
+            String fullUrl = builder.toUriString();
+            logger.debug("Requesting location suggestions from OpenRouteService: {}", fullUrl);
 
             // Send request
             ResponseEntity<String> response = restTemplate.exchange(
@@ -90,10 +97,11 @@ public class OpenRouteService {
                 // Create and add the Location object
                 locations.add(new Location(displayNameBuilder.toString(), latitude, longitude));
             }
+            logger.info("Found {} location suggestions for query: '{}'", locations.size(), query);
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error("Failed to fetch location suggestions for query '{}': {}", query, e.getMessage());
         }
-
         // return the list of location objects
         return locations;
     }
@@ -107,6 +115,11 @@ public class OpenRouteService {
      */
     public double calculateDistance(Location from, Location to) {
         JsonNode summary = getRouteData(from, to);
+
+        //logging
+        double duration = summary != null ? summary.path("duration").asDouble() : -1;
+        logger.debug("Estimated duration from {} to {}: {} seconds", from.getDisplayName(), to.getDisplayName(), duration);
+
         return summary.path("distance").asDouble();
     }
 
@@ -135,7 +148,9 @@ public class OpenRouteService {
                     .queryParam("start", from.getLongitude() + "," + from.getLatitude())
                     .queryParam("end", to.getLongitude() + "," + to.getLatitude());
 
-            System.out.println(builder.toUriString());
+            //logging
+            String fullUrl = builder.toUriString();
+            logger.debug("Requesting route from OpenRouteService: {}", fullUrl);
 
             // Make the request
             ResponseEntity<String> response = restTemplate.exchange(
@@ -150,6 +165,7 @@ public class OpenRouteService {
             return rootNode.path("features").get(0).path("properties").path("summary");
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error("Failed to retrieve route data from {} to {}: {}", from, to, e.getMessage());
             return null;
         }
     }

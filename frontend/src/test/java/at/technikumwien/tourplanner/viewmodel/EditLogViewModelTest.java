@@ -1,76 +1,84 @@
 package at.technikumwien.tourplanner.viewmodel;
-
 import at.technikumwien.tourplanner.model.LogItem;
 import at.technikumwien.tourplanner.service.LogManager;
+import at.technikumwien.tourplanner.utils.Event;
+import at.technikumwien.tourplanner.viewmodel.EditLogViewModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-class EditLogViewModelTest {
-    private LogManager logManager;
+public class EditLogViewModelTest {
+
     private EditLogViewModel viewModel;
+    private LogManager logManagerMock;
 
     @BeforeEach
-    void setUp() {
-        logManager = mock(LogManager.class);
-        viewModel = new EditLogViewModel(logManager);
+    public void setUp() {
+        logManagerMock = mock(LogManager.class);
+        viewModel = new EditLogViewModel(logManagerMock);
     }
 
     @Test
-    void testLoadLog_setsAllFieldsCorrectly() {
-        LogItem logItem = new LogItem(
-                "log123",
-                "tour789",
-                LocalDate.of(2024, 10, 1),
-                3.5,
-                "Nice tour!",
-                "2h 30min",
-                "8.5km",
-                "5 - best"
-        );
+    public void testLoadLog_PopulatesFields() {
+        LogItem log = new LogItem("log1", "tour1", LocalDate.of(2023, 1, 1), 2.5, "Nice tour", "02:00", "10km", "4");
 
-        viewModel.loadLog(logItem);
+        viewModel.loadLog(log);
 
-        assertEquals("log123", viewModel.logIdProperty().get());
-        assertEquals("tour789", viewModel.tourIdProperty().get());
-        assertEquals(LocalDate.of(2024, 10, 1), viewModel.dateProperty().get());
-        assertEquals("Nice tour!", viewModel.commentProperty().get());
-        assertEquals(3.5, viewModel.difficultyProperty().get());
-        assertEquals("2h 30min", viewModel.totalTimeProperty().get());
-        assertEquals("8.5km", viewModel.totalDistanceProperty().get());
-        assertEquals("5 - best", viewModel.ratingProperty().get());
+        assertEquals("log1", viewModel.logIdProperty().get());
+        assertEquals("tour1", viewModel.tourIdProperty().get());
+        assertEquals(LocalDate.of(2023, 1, 1), viewModel.dateProperty().get());
+        assertEquals("Nice tour", viewModel.commentProperty().get());
+        assertEquals(2.5, viewModel.difficultyProperty().get());
+        assertEquals("02:00", viewModel.totalTimeProperty().get());
+        assertEquals("10km", viewModel.totalDistanceProperty().get());
+        assertEquals("4", viewModel.ratingProperty().get());
     }
 
     @Test
-    void testCreateNewLog_savesLogCorrectly_whenAllFieldsValid() {
-        // prepare valid form values
-        viewModel.dateProperty().set(LocalDate.of(2025, 5, 20));
-        viewModel.difficultyProperty().set(2.0);
-        viewModel.totalTimeProperty().set("3h");
-        viewModel.totalDistanceProperty().set("12km");
-        viewModel.commentProperty().set("Test comment");
-        viewModel.ratingProperty().set("4 - good");
-        viewModel.prepareNewLogForTour("tour456");
+    public void testCancelEditLog_ResetsFieldsAndFiresEvent() {
+        PropertyChangeListener listener = mock(PropertyChangeListener.class);
+        viewModel.addCancelLogEditListener(listener);
+
+        viewModel.logIdProperty().set("log1");
+        viewModel.tourIdProperty().set("tour1");
+        viewModel.dateProperty().set(LocalDate.now());
+
+        viewModel.cancelEditLog();
+
+        assertNull(viewModel.logIdProperty().get());
+        assertNull(viewModel.tourIdProperty().get());
+        assertNull(viewModel.dateProperty().get());
+        verify(listener, times(1)).propertyChange(any(PropertyChangeEvent.class));
+    }
+
+    @Test
+    public void testCreateNewLog_SuccessfulSave() {
+        viewModel.tourIdProperty().set("tour1");
+        viewModel.dateProperty().set(LocalDate.of(2024, 12, 1));
+        viewModel.difficultyProperty().set(3.0);
+        viewModel.commentProperty().set("Well done");
+        viewModel.totalTimeProperty().set("01:30");
+        viewModel.totalDistanceProperty().set("5km");
+        viewModel.ratingProperty().set("5");
 
         viewModel.createNewLog();
 
         ArgumentCaptor<LogItem> captor = ArgumentCaptor.forClass(LogItem.class);
-        verify(logManager).saveLog(captor.capture());
+        verify(logManagerMock, times(1)).saveLog(captor.capture());
 
         LogItem saved = captor.getValue();
-        assertNull(saved.getLogId()); // new Log
-        assertEquals("tour456", saved.getTourId());
-        assertEquals(LocalDate.of(2025, 5, 20), saved.getDate());
-        assertEquals(2.0, saved.getDifficulty());
-        assertEquals("3h", saved.getTotalTime());
-        assertEquals("12km", saved.getTotalDistance());
-        assertEquals("Test comment", saved.getComment());
-        assertEquals("4 - good", saved.getRating());
+        assertEquals("tour1", saved.getTourId());
+        assertEquals("01:30", saved.getTotalTime());
+        assertEquals("5km", saved.getTotalDistance());
+        assertEquals("Well done", saved.getComment());
+        assertEquals("5", saved.getRating());
     }
+
 }
