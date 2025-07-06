@@ -117,9 +117,8 @@ public class LogItem {
         sb.append(date != null ? date : "").append(",");
         sb.append(difficulty != null ? difficulty : "").append(",");
         sb.append(escapeField(comment)).append(",");
-        sb.append(escapeField(totalTime)).append(",");
-        sb.append(escapeField(totalDistance)).append(",");
-        sb.append(escapeField(rating));
+        sb.append(totalTime).append(",");
+        sb.append(rating);
 
         return sb.toString();
     }
@@ -144,7 +143,7 @@ public class LogItem {
     public static LogItem fromExportString(String exportString) {
         List<String> fields = parseCsvLine(exportString);
 
-        if (fields.size() < 9 || !fields.get(0).equals("L")) {
+        if (fields.size() < 8 || !fields.get(0).equals("L")) {
             throw new IllegalArgumentException("Invalid log export string format");
         }
 
@@ -162,13 +161,12 @@ public class LogItem {
 
         Double difficulty = fields.get(index).isEmpty() ? null : Double.parseDouble(fields.get(index++));
         String comment = fields.get(index++);
-        String totalTime = fields.get(index++);
-        String totalDistance = fields.get(index++);
-        String rating = fields.get(index);
+        Integer totalTime = Integer.parseInt(fields.get(index++));
+        Integer rating = Integer.parseInt(fields.get(index));
 
         return new LogItem(
             logId, tourId, date, difficulty, comment,
-            totalTime, totalDistance, rating
+            totalTime, rating
         );
     }
 
