@@ -1,6 +1,7 @@
 package at.technikumwien.tourplanner.viewmodel;
 
 import at.technikumwien.tourplanner.model.TourItem;
+import at.technikumwien.tourplanner.service.ImportExportService;
 import at.technikumwien.tourplanner.service.TourManager;
 import at.technikumwien.tourplanner.utils.Event;
 import javafx.collections.ObservableList;
@@ -10,11 +11,13 @@ import java.beans.PropertyChangeSupport;
 
 public class TourListViewModel {
     private final TourManager tourManager;
+    private final ImportExportService importExportService;
     private final PropertyChangeSupport tourSelectedEvent = new PropertyChangeSupport(this);
     private final PropertyChangeSupport createTourEvent = new PropertyChangeSupport(this);
 
-    public TourListViewModel(TourManager tourManager) {
+    public TourListViewModel(TourManager tourManager, ImportExportService importExportService) {
         this.tourManager = tourManager;
+        this.importExportService = importExportService;
     }
 
     public void addTourSelectedListener(PropertyChangeListener listener) {
@@ -37,5 +40,13 @@ public class TourListViewModel {
     public void createNewTour() {
         TourItem newTour = new TourItem("New Tour");
         createTourEvent.firePropertyChange(Event.EDIT_TOUR, null, newTour);
+    }
+
+    public void exportTours() {
+        boolean success = importExportService.exportData();
+        if (!success) {
+            // You might want to show an error message to the user here
+            System.out.println("Export failed. Check logs for more details.");
+        }
     }
 }

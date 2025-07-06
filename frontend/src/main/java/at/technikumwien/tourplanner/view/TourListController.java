@@ -32,4 +32,9 @@ public class TourListController {
     private void onAddTourButtonClick() {
         this.viewModel.createNewTour();
     }
+
+    @FXML
+    private void onExportButtonClick() {
+        this.viewModel.exportTours();
+    }
 }

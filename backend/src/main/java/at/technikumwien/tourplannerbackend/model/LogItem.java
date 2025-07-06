@@ -1,5 +1,6 @@
 package at.technikumwien.tourplannerbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
@@ -108,5 +109,37 @@ public class LogItem {
 
     public void setRating(String rating) {
         this.rating = rating;
+    }
+
+    /**
+     * Returns a CSV formatted string for export purposes.
+     * Format: L,logId,tourId,date,difficulty,comment,totalTime,totalDistance,rating
+     */
+    @JsonIgnore
+    public String getExportString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("L,");
+        sb.append(escapeField(logId)).append(",");
+        sb.append(escapeField(tourId)).append(",");
+        sb.append(date != null ? date : "").append(",");
+        sb.append(difficulty != null ? difficulty : "").append(",");
+        sb.append(escapeField(comment)).append(",");
+        sb.append(escapeField(totalTime)).append(",");
+        sb.append(escapeField(totalDistance)).append(",");
+        sb.append(escapeField(rating));
+
+        return sb.toString();
+    }
+
+    // Helper method to escape commas in fields
+    private String escapeField(String field) {
+        if (field == null) {
+            return "";
+        }
+        // If the field contains commas or quotes, wrap it in quotes and escape any quotes
+        if (field.contains(",") || field.contains("\"")) {
+            return "\"" + field.replace("\"", "\"\"") + "\"";
+        }
+        return field;
     }
 }

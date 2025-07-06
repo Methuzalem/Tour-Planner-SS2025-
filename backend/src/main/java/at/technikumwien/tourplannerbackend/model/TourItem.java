@@ -1,5 +1,6 @@
 package at.technikumwien.tourplannerbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -152,5 +153,47 @@ public class TourItem {
 
     public void setRouteInformation(String routeInformation) {
         this.routeInformation = routeInformation;
+    }
+
+    /**
+     * Returns a CSV formatted string for export purposes.
+     * Format: T,id,name,description,startLocationName,startLocationLat,startLocationLng,endLocationName,endLocationLat,endLocationLng,transportType,distance,estimatedTime,routeInformation
+     */
+    @JsonIgnore
+    public String getExportString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("T,");
+        sb.append(escapeField(id)).append(",");
+        sb.append(escapeField(name)).append(",");
+        sb.append(escapeField(description)).append(",");
+
+        // Start location
+        sb.append(escapeField(startLocation != null ? startLocation.getDisplayName() : "")).append(",");
+        sb.append(startLocation != null ? startLocation.getLatitude() : "").append(",");
+        sb.append(startLocation != null ? startLocation.getLongitude() : "").append(",");
+
+        // End location
+        sb.append(escapeField(endLocation != null ? endLocation.getDisplayName() : "")).append(",");
+        sb.append(endLocation != null ? endLocation.getLatitude() : "").append(",");
+        sb.append(endLocation != null ? endLocation.getLongitude() : "").append(",");
+
+        sb.append(escapeField(transportType)).append(",");
+        sb.append(distance != null ? distance : "").append(",");
+        sb.append(estimatedTime != null ? estimatedTime : "").append(",");
+        sb.append(escapeField(routeInformation));
+
+        return sb.toString();
+    }
+
+    // Helper method to escape commas in fields
+    private String escapeField(String field) {
+        if (field == null) {
+            return "";
+        }
+        // If the field contains commas or quotes, wrap it in quotes and escape any quotes
+        if (field.contains(",") || field.contains("\"")) {
+            return "\"" + field.replace("\"", "\"\"") + "\"";
+        }
+        return field;
     }
 }
