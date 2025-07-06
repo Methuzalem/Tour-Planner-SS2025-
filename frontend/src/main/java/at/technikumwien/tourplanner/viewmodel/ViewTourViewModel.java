@@ -73,19 +73,4 @@ public class ViewTourViewModel {
             throw new IllegalStateException("No tour selected to generate report.");
         }
     }
-
-    public void generateSummaryReport() {
-        if (currentTour.get() != null) {
-            try {
-                // Generate a summary report for the current tour
-                reportService.getTourSummaryReport(currentTour.get().id());
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("Failed to generate summary report for tour: " + currentTour.get().name(), e);
-            }
-        } else {
-            throw new IllegalStateException("No tour selected to generate summary report.");
-        }
-    }
 }

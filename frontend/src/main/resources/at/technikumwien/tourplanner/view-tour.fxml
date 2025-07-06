@@ -21,7 +21,6 @@
             </left>
             <right>
                 <HBox spacing="10" alignment="CENTER_RIGHT">
-                    <Button text="Summary Report" fx:id="summaryReportButton" onAction="#onSummaryReportButtonClick"/>
                     <Button text="Overview Report" fx:id="overviewReportButton" onAction="#onOverviewReportButtonClick"/>
                     <Button text="Edit Tour" fx:id="editButton" onAction="#onEditButtonClick"/>
                     <Button text="Delete Tour" fx:id="deleteButton" onAction="#onDeleteButtonClick" 

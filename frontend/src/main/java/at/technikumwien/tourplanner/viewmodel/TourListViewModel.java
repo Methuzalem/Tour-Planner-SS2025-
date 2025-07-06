@@ -2,6 +2,7 @@ package at.technikumwien.tourplanner.viewmodel;
 
 import at.technikumwien.tourplanner.model.TourItem;
 import at.technikumwien.tourplanner.service.ImportExportService;
+import at.technikumwien.tourplanner.service.ReportService;
 import at.technikumwien.tourplanner.service.TourManager;
 import at.technikumwien.tourplanner.utils.Event;
 import javafx.collections.ObservableList;
@@ -13,12 +14,14 @@ import java.io.File;
 public class TourListViewModel {
     private final TourManager tourManager;
     private final ImportExportService importExportService;
+    private final ReportService reportService;
     private final PropertyChangeSupport tourSelectedEvent = new PropertyChangeSupport(this);
     private final PropertyChangeSupport createTourEvent = new PropertyChangeSupport(this);
 
-    public TourListViewModel(TourManager tourManager, ImportExportService importExportService) {
+    public TourListViewModel(TourManager tourManager, ImportExportService importExportService, ReportService reportService) {
         this.tourManager = tourManager;
         this.importExportService = importExportService;
+        this.reportService = reportService;
     }
 
     public void addTourSelectedListener(PropertyChangeListener listener) {
@@ -60,5 +63,16 @@ public class TourListViewModel {
             // Refresh the tour list after successful import
             tourManager.refreshTourList();
         }
+    }
+
+    public void generateSummaryReport() {
+            try {
+                // Generate a summary report for the current tour
+                reportService.getTourSummaryReport();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Failed to generate summary report", e);
+            }
     }
 }

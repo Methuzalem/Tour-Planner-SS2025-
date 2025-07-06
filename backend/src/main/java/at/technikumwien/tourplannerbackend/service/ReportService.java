@@ -258,4 +258,151 @@ public class ReportService {
 
         return String.format("%d h %d min", hours, minutes);
     }
+
+    public byte[] generateTourSummaryReport() {
+        // Get all tours
+        List<TourItem> allTours = tourService.getAllTours();
+
+        // Generate the PDF with all tours summary
+        return createTourSummaryPDF(allTours);
+    }
+
+    private byte[] createTourSummaryPDF(List<TourItem> tours) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Document document = new Document(PageSize.A4.rotate()); // Landscape mode for wider table
+
+        try {
+            PdfWriter.getInstance(document, baos);
+            document.open();
+
+            // Add title
+            Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
+            Paragraph title = new Paragraph("Tour Summary Report", titleFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            title.setSpacingAfter(20);
+            document.add(title);
+
+            if (tours.isEmpty()) {
+                document.add(new Paragraph("No tours available."));
+            } else {
+                // Create summary table
+                PdfPTable summaryTable = new PdfPTable(7); // 7 columns for the table
+                summaryTable.setWidthPercentage(100);
+                summaryTable.setSpacingBefore(10f);
+
+                // Set relative column widths
+                float[] columnWidths = {2f, 3f, 2f, 1.5f, 1.5f, 1.5f, 1.5f};
+                summaryTable.setWidths(columnWidths);
+
+                // Add table headers
+                String[] headers = {"Name", "Description", "Transport Type", "Distance (km)", "Est. Time", "Avg. Time", "Avg. Rating"};
+                for (String header : headers) {
+                    PdfPCell cell = new PdfPCell(new Phrase(header, FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
+                    cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    cell.setBackgroundColor(new Color(220, 220, 220));
+                    cell.setPadding(5);
+                    summaryTable.addCell(cell);
+                }
+
+                // Add data for each tour
+                for (TourItem tour : tours) {
+                    // Get logs for this tour
+                    List<LogItem> tourLogs = logItemRepository.findByTourId(tour.getId());
+
+                    // Calculate averages
+                    double avgRating = tourLogs.stream()
+                            .filter(log -> log.getRating() != null)
+                            .mapToInt(LogItem::getRating)
+                            .average()
+                            .orElse(0);
+
+                    double avgTime = tourLogs.stream()
+                            .filter(log -> log.getTotalTime() != null)
+                            .mapToInt(LogItem::getTotalTime)
+                            .average()
+                            .orElse(0);
+
+                    // Add cells to the table
+                    summaryTable.addCell(tour.getName() != null ? tour.getName() : "N/A");
+
+                    // Description cell with limited length
+                    String description = tour.getDescription();
+                    if (description != null && description.length() > 50) {
+                        description = description.substring(0, 47) + "...";
+                    }
+                    summaryTable.addCell(description != null ? description : "N/A");
+
+                    summaryTable.addCell(tour.getTransportType() != null ? tour.getTransportType() : "N/A");
+                    summaryTable.addCell(tour.getDistance() != null ? String.format("%.2f", tour.getDistance()) : "N/A");
+                    summaryTable.addCell(formatTime(tour.getEstimatedTime()));
+                    summaryTable.addCell(formatMinutes((int)avgTime));
+
+                    // Format rating with 1 decimal place
+                    String ratingStr = tourLogs.isEmpty() ? "N/A" : String.format("%.1f/5", avgRating);
+                    summaryTable.addCell(ratingStr);
+                }
+
+                document.add(summaryTable);
+
+                // Add summary statistics
+                addOverallStatistics(document, tours);
+            }
+
+            // Add footer with generation timestamp
+            Paragraph footer = new Paragraph("Report generated on: " + LocalDate.now().toString(),
+                    FontFactory.getFont(FontFactory.HELVETICA, 10));
+            footer.setSpacingBefore(20);
+            footer.setAlignment(Element.ALIGN_RIGHT);
+            document.add(footer);
+
+            document.close();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate PDF report", e);
+        }
+
+        return baos.toByteArray();
+    }
+
+    private void addOverallStatistics(Document document, List<TourItem> tours) throws DocumentException {
+        Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14);
+        Paragraph statsTitle = new Paragraph("Overall Statistics", sectionFont);
+        statsTitle.setSpacingBefore(20);
+        statsTitle.setSpacingAfter(10);
+        document.add(statsTitle);
+
+        // Calculate total distance of all tours
+        double totalDistance = tours.stream()
+                .filter(tour -> tour.getDistance() != null)
+                .mapToDouble(TourItem::getDistance)
+                .sum();
+
+        // Count transport types
+        long carTours = tours.stream()
+                .filter(tour -> "Car".equalsIgnoreCase(tour.getTransportType()))
+                .count();
+
+        long bikeTours = tours.stream()
+                .filter(tour -> "Bike".equalsIgnoreCase(tour.getTransportType()) ||
+                                "Bicycle".equalsIgnoreCase(tour.getTransportType()))
+                .count();
+
+        long walkingTours = tours.stream()
+                .filter(tour -> "Walking".equalsIgnoreCase(tour.getTransportType()) ||
+                                "Hike".equalsIgnoreCase(tour.getTransportType()) ||
+                                "Hiking".equalsIgnoreCase(tour.getTransportType()))
+                .count();
+
+        // Add statistics table
+        PdfPTable statsTable = new PdfPTable(2);
+        statsTable.setWidthPercentage(60);
+        statsTable.setHorizontalAlignment(Element.ALIGN_LEFT);
+
+        addTableRow(statsTable, "Total Tours", String.valueOf(tours.size()));
+        addTableRow(statsTable, "Total Distance", String.format("%.2f km", totalDistance));
+        addTableRow(statsTable, "Car Tours", String.valueOf(carTours));
+        addTableRow(statsTable, "Bike Tours", String.valueOf(bikeTours));
+        addTableRow(statsTable, "Walking Tours", String.valueOf(walkingTours));
+
+        document.add(statsTable);
+    }
 }

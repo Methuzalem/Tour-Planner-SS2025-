@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 public class ReportController {
@@ -40,23 +42,14 @@ public class ReportController {
 
     @GetMapping("/summary-report")
     public ResponseEntity<byte[]> generateSummary() {
-        // Here you would use `tourId` to fetch data for the summary PDF
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Document document = new Document();
-        try {
-            PdfWriter.getInstance(document, baos);
-            document.open();
-            document.add(new Paragraph("Summary Report for Tour ID: " + tourId));
-            document.close();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to generate summary report", e);
-        }
-
-        byte[] pdfBytes = baos.toByteArray();
+        byte[] pdfBytes = reportService.generateTourSummaryReport();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "tour-summary-" + tourId + ".pdf");
+
+        // Format current date for the filename
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        headers.setContentDispositionFormData("attachment", "tour-summary-" + currentDate + ".pdf");
         headers.setContentLength(pdfBytes.length);
 
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);

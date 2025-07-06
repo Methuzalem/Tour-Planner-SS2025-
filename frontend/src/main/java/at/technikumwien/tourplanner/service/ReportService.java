@@ -32,7 +32,7 @@ public class ReportService {
      */
     public String getTourOverviewReport(String tourId) throws IOException, InterruptedException {
         // Build the URL for the endpoint
-        String endpoint = baseUrl + "/report/" + tourId + "/overview";
+        String endpoint = baseUrl + "/report/" + tourId;
 
         // Create HTTP request
         HttpRequest request = HttpRequest.newBuilder()
@@ -63,14 +63,13 @@ public class ReportService {
     /**
      * Downloads the tour summary report PDF for a specific tour
      *
-     * @param tourId The ID of the tour to get the summary report for
      * @return The path to the saved PDF file
      * @throws IOException If there's an error during the HTTP request or file saving
      * @throws InterruptedException If the HTTP request is interrupted
      */
-    public String getTourSummaryReport(String tourId) throws IOException, InterruptedException {
+    public String getTourSummaryReport() throws IOException, InterruptedException {
         // Build the URL for the endpoint
-        String endpoint = baseUrl + "/report/" + tourId + "/summary";
+        String endpoint = baseUrl + "/summary-report";
 
         // Create HTTP request
         HttpRequest request = HttpRequest.newBuilder()
@@ -88,7 +87,7 @@ public class ReportService {
             Files.createDirectories(Paths.get(outputDir));
 
             // Save the PDF file
-            String fileName = "tour-summary-" + tourId + ".pdf";
+            String fileName = "tour-summary-report.pdf";
             String filePath = outputDir + File.separator + fileName;
             Files.write(Paths.get(filePath), response.body(), StandardOpenOption.CREATE);
 

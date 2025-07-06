@@ -40,7 +40,7 @@ public class TourPlannerApplication extends Application {
         routeService = new RouteService();
         importExportService = new ImportExportService();
         reportService = new ReportService();
-        tourListViewModel = new TourListViewModel(tourManager, importExportService);
+        tourListViewModel = new TourListViewModel(tourManager, importExportService, reportService);
         viewTourViewModel = new ViewTourViewModel(tourManager, reportService);
         editTourViewModel = new EditTourViewModel(tourManager, routeService);
         logListViewModel = new LogListViewModel(logManager);
