@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 
 public class ImportExportService {
     private static final String EXPORT_URL = "http://localhost:8080/export";
+    private static final String IMPORT_URL = "http://localhost:8080/import";
 
     /**
      * Retrieves export data from the backend and saves it to the Downloads/Tourplanner directory
@@ -59,6 +60,45 @@ public class ImportExportService {
             return true;
 
         } catch (IOException | InterruptedException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Reads a .tpexp file and sends its contents to the backend for import
+     *
+     * @param file The .tpexp file to import
+     * @return true if import was successful, false otherwise
+     */
+    public boolean importData(File file) {
+        try {
+            // Read file contents
+            byte[] fileContent = Files.readAllBytes(file.toPath());
+
+            // Create HTTP client and prepare multipart request
+            HttpClient client = HttpClient.newHttpClient();
+
+            // Build request with file content
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(IMPORT_URL))
+                    .header("Content-Type", "application/octet-stream")
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(fileContent))
+                    .build();
+
+            // Send request and get response
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                System.out.println("Import failed. Server returned status code: " + response.statusCode());
+                return false;
+            }
+
+            System.out.println("Import successful: " + file.getName());
+            return true;
+
+        } catch (IOException | InterruptedException e) {
+            System.out.println("Import failed: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
 
 public class TourListViewModel {
     private final TourManager tourManager;
@@ -47,6 +48,17 @@ public class TourListViewModel {
         if (!success) {
             // You might want to show an error message to the user here
             System.out.println("Export failed. Check logs for more details.");
+        }
+    }
+
+    public void importTours(File file) {
+        boolean success = importExportService.importData(file);
+        if (!success) {
+            // You might want to show an error message to the user here
+            System.out.println("Import failed. Check logs for more details.");
+        } else {
+            // Refresh the tour list after successful import
+            tourManager.refreshTourList();
         }
     }
 }
