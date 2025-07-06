@@ -1,5 +1,6 @@
 package at.technikumwien.tourplannerbackend.controller;
 
+import at.technikumwien.tourplannerbackend.service.ReportService;
 import at.technikumwien.tourplannerbackend.service.TourService;
 import com.lowagie.text.Document;
 import com.lowagie.text.Paragraph;
@@ -18,22 +19,16 @@ import java.io.ByteArrayOutputStream;
 @RestController
 public class ReportController {
     private final TourService tourService;
+    private final ReportService reportService;
 
-    public ReportController(TourService tourService) {
+    public ReportController(TourService tourService, ReportService reportService) {
         this.tourService = tourService;
+        this.reportService = reportService;
     }
 
-    @GetMapping("/report/{tourId}/overview")
+    @GetMapping("/report/{tourId}")
     public ResponseEntity<byte[]> generateReport(@PathVariable String tourId) {
-        // Here you would use `tourId` to fetch data for the PDF
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Document document = new Document();
-        PdfWriter.getInstance(document, baos);
-        document.open();
-        document.add(new Paragraph("PDF Report for Tour ID: " + tourId));
-        document.close();
-
-        byte[] pdfBytes = baos.toByteArray();
+        byte[] pdfBytes = reportService.generateTourOverviewReport(tourId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
@@ -43,15 +38,19 @@ public class ReportController {
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 
-    @GetMapping("/report/{tourId}/summary")
-    public ResponseEntity<byte[]> generateSummary(@PathVariable String tourId) {
+    @GetMapping("/summary-report")
+    public ResponseEntity<byte[]> generateSummary() {
         // Here you would use `tourId` to fetch data for the summary PDF
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Document document = new Document();
-        PdfWriter.getInstance(document, baos);
-        document.open();
-        document.add(new Paragraph("Summary Report for Tour ID: " + tourId));
-        document.close();
+        try {
+            PdfWriter.getInstance(document, baos);
+            document.open();
+            document.add(new Paragraph("Summary Report for Tour ID: " + tourId));
+            document.close();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate summary report", e);
+        }
 
         byte[] pdfBytes = baos.toByteArray();
 
@@ -62,5 +61,4 @@ public class ReportController {
 
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
-
 }
