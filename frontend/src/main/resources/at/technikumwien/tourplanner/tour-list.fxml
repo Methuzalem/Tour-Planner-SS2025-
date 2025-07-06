@@ -13,6 +13,8 @@
     <HBox spacing="5" alignment="CENTER_LEFT">
         <Label text="Tour List:" style="-fx-font-weight: bold;"/>
         <Region HBox.hgrow="ALWAYS" />
+        <Button text="Import" onAction="#onImportButtonClick" />
+        <Button text="Export" onAction="#onExportButtonClick" />
         <Button text="+" onAction="#onAddTourButtonClick" />
     </HBox>
     

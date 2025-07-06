@@ -40,8 +40,7 @@ public class LogListController {
         dateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDate().toString()));
         difficultyColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getDifficulty())));
         commentColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getComment()));
-        totalTimeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTotalTime()));
-        totalDistanceColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTotalDistance()));
+        totalTimeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getTotalTime())));
         ratingColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRating()));
 
         logTable.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newItem) -> {

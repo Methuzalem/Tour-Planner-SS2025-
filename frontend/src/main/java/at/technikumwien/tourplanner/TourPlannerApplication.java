@@ -1,5 +1,6 @@
 package at.technikumwien.tourplanner;
 
+import at.technikumwien.tourplanner.service.ImportExportService;
 import at.technikumwien.tourplanner.service.LogManager;
 import at.technikumwien.tourplanner.service.ReportService;
 import at.technikumwien.tourplanner.service.RouteService;
@@ -22,6 +23,7 @@ public class TourPlannerApplication extends Application {
     private final TourManager tourManager;
     private final LogManager logManager;
     private final RouteService routeService;
+    private final ImportExportService importExportService;
     private final ReportService reportService;
 
     // view models:
@@ -36,9 +38,9 @@ public class TourPlannerApplication extends Application {
         tourManager = new TourManager();
         logManager = new LogManager();
         routeService = new RouteService();
+        importExportService = new ImportExportService();
         reportService = new ReportService();
-
-        tourListViewModel = new TourListViewModel(tourManager);
+        tourListViewModel = new TourListViewModel(tourManager, importExportService);
         viewTourViewModel = new ViewTourViewModel(tourManager, reportService);
         editTourViewModel = new EditTourViewModel(tourManager, routeService);
         logListViewModel = new LogListViewModel(logManager);

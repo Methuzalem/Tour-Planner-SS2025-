@@ -32,12 +32,7 @@
 
             <!-- Total Time -->
             <Label style="-fx-font-weight: bold;" text="Total Time:" GridPane.rowIndex="4" />
-            <TextField fx:id="totalTimeTextField" promptText="Enter your total time in h" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-
-
-            <!-- Tour distance -->
-            <Label style="-fx-font-weight: bold;" text="Distance (km):" GridPane.rowIndex="5" />
-            <TextField fx:id="distanceTextField" promptText="Enter distance in kilometers" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <TextField fx:id="totalTimeTextField" promptText="Enter your total time in minutes" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
 
             <!-- Transport type -->
@@ -46,8 +41,6 @@
 
 
          <rowConstraints>
-            <RowConstraints />
-            <RowConstraints />
             <RowConstraints />
             <RowConstraints />
             <RowConstraints />

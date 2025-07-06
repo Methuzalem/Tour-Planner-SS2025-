@@ -4,6 +4,7 @@ package at.technikumwien.tourplanner.viewmodel;
 import at.technikumwien.tourplanner.model.LogItem;
 import at.technikumwien.tourplanner.service.LogManager;
 import at.technikumwien.tourplanner.utils.Event;
+import at.technikumwien.tourplanner.utils.RatingOption;
 import javafx.beans.property.*;
 import javafx.scene.control.Alert;
 
@@ -21,9 +22,8 @@ public class EditLogViewModel {
     private final ObjectProperty<LocalDate> date = new SimpleObjectProperty<>();
     private final StringProperty comment = new SimpleStringProperty();
     private final DoubleProperty difficulty = new SimpleDoubleProperty();
-    private final StringProperty totalTime = new SimpleStringProperty();
-    private final StringProperty totalDistance = new SimpleStringProperty();
-    private final StringProperty rating = new SimpleStringProperty();
+    private final ObjectProperty<Integer> totalTime = new SimpleObjectProperty<>();
+    private final ObjectProperty<RatingOption> rating = new SimpleObjectProperty<>();
 
     public EditLogViewModel(LogManager logManager) {this.logManager = logManager;}
 
@@ -33,9 +33,8 @@ public class EditLogViewModel {
     public ObjectProperty<LocalDate> dateProperty() { return date; }
     public StringProperty commentProperty() { return comment; }
     public DoubleProperty difficultyProperty() { return difficulty; }
-    public StringProperty totalTimeProperty() { return totalTime; }
-    public StringProperty totalDistanceProperty() { return totalDistance; }
-    public StringProperty ratingProperty() { return rating; }
+    public ObjectProperty<Integer> totalTimeProperty() {return totalTime; }
+    public ObjectProperty<RatingOption> ratingProperty() { return rating; }
 
 
     public void loadLog(LogItem logItem) {
@@ -45,8 +44,8 @@ public class EditLogViewModel {
         comment.set(logItem.getComment());
         difficulty.set(logItem.getDifficulty());
         totalTime.set(logItem.getTotalTime());
-        totalDistance.set(logItem.getTotalDistance());
-        rating.set(logItem.getRating());
+        int ratingValue = Integer.parseInt(logItem.getRating());
+        rating.set(RatingOption.fromValue(ratingValue));
     }
 
     private void resetFormFields() {
@@ -55,9 +54,8 @@ public class EditLogViewModel {
         date.set(null);
         comment.set("");
         difficulty.set(0.00);
-        totalTime.set("");
-        totalDistance.set("");
-        rating.set("0");
+        totalTime.set(null);
+        rating.set(null);
     }
 
     public void cancelEditLog() {
@@ -74,21 +72,15 @@ public class EditLogViewModel {
     public void createNewLog() {
         LocalDate logDate = date.get();
         double diff = difficulty.get();
-        String time = totalTime.get();
-        String distance = totalDistance.get();
+        Integer time = totalTime.get();
 
         if (logDate == null) {
             showAlert("Invalid Input", "Please enter a date.");
             return;
         }
 
-        if (time == null || time.isBlank()) {
-            showAlert("Invalid Input", "Please enter your total time!");
-            return;
-        }
-
-        if (distance == null || distance.isBlank()) {
-            showAlert("Invalid Input", "Please enter a total distance.");
+        if (time == 0) {
+            showAlert("Invalid Input - Time must be greater than 0", "Please enter your total time!");
             return;
         }
 
@@ -96,8 +88,9 @@ public class EditLogViewModel {
             comment.set("No comment for this Log!");
         }
 
-        if (rating.get() == null){
-            rating.set("No rating for this Log!");
+        if (rating.get() == null) {
+            showAlert("Invalid Input", "Please select a rating!");
+            return;
         }
 
         LogItem logToSave = new LogItem(
@@ -107,8 +100,7 @@ public class EditLogViewModel {
                 diff,
                 comment.get(),
                 time,
-                distance,
-                rating.get()
+                String.valueOf(rating.get().getValue())
         );
         logManager.saveLog(logToSave);
         cancelLogEditEvent.firePropertyChange(Event.CANCEL_LOG, null, logToSave);
@@ -127,4 +119,10 @@ public class EditLogViewModel {
     public void prepareNewLogForTour(String id) {
         this.tourId.set(id);
     }
+
+    //getter for testing
+    public RatingOption getRating() {
+        return rating.get();
+    }
+
 }

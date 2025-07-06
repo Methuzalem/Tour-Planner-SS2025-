@@ -17,6 +17,13 @@ public class TourManager {
     private ObservableList<TourItem> tourList = FXCollections.observableArrayList();
 
     public TourManager() {
+        refreshTourList();
+    }
+
+    /**
+     * Fetches all tours from the backend and updates the frontend state
+     */
+    public void refreshTourList() {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/tours"))
@@ -30,12 +37,11 @@ public class TourManager {
             ObjectMapper objectMapper = new ObjectMapper();
             List<TourItem> tours = objectMapper.readValue(response.body(), new TypeReference<List<TourItem>>() {});
             tourList.setAll(tours);
-            System.out.println("tourList: " + tourList.toString());
+            System.out.println("Refreshed tourList: " + tourList.size() + " tours loaded");
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error fetching tours: " + e.getMessage());
         }
-
     }
 
     // read the list of tours

@@ -1,5 +1,6 @@
 package at.technikumwien.tourplannerbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -11,6 +12,9 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.AttributeOverride;
 import org.hibernate.annotations.GenericGenerator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tour_items")
@@ -152,5 +156,121 @@ public class TourItem {
 
     public void setRouteInformation(String routeInformation) {
         this.routeInformation = routeInformation;
+    }
+
+    /**
+     * Returns a CSV formatted string for export purposes.
+     * Format: T,id,name,description,startLocationName,startLocationLat,startLocationLng,endLocationName,endLocationLat,endLocationLng,transportType,distance,estimatedTime,routeInformation
+     */
+    @JsonIgnore
+    public String getExportString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("T,");
+        sb.append(escapeField(id)).append(",");
+        sb.append(escapeField(name)).append(",");
+        sb.append(escapeField(description)).append(",");
+
+        // Start location
+        sb.append(escapeField(startLocation != null ? startLocation.getDisplayName() : "")).append(",");
+        sb.append(startLocation != null ? startLocation.getLatitude() : "").append(",");
+        sb.append(startLocation != null ? startLocation.getLongitude() : "").append(",");
+
+        // End location
+        sb.append(escapeField(endLocation != null ? endLocation.getDisplayName() : "")).append(",");
+        sb.append(endLocation != null ? endLocation.getLatitude() : "").append(",");
+        sb.append(endLocation != null ? endLocation.getLongitude() : "").append(",");
+
+        sb.append(escapeField(transportType)).append(",");
+        sb.append(distance != null ? distance : "").append(",");
+        sb.append(estimatedTime != null ? estimatedTime : "").append(",");
+        sb.append(escapeField(routeInformation));
+
+        return sb.toString();
+    }
+
+    // Helper method to escape commas in fields
+    private String escapeField(String field) {
+        if (field == null) {
+            return "";
+        }
+        // If the field contains commas or quotes, wrap it in quotes and escape any quotes
+        if (field.contains(",") || field.contains("\"")) {
+            return "\"" + field.replace("\"", "\"\"") + "\"";
+        }
+        return field;
+    }
+
+    /**
+     * Creates a TourItem from an export string
+     * @param exportString The export string in CSV format
+     * @return A new TourItem instance
+     */
+    public static TourItem fromExportString(String exportString) {
+        // Parse CSV line, handling quoted fields
+        List<String> fields = parseCsvLine(exportString);
+
+        if (fields.size() < 14 || !fields.get(0).equals("T")) {
+            throw new IllegalArgumentException("Invalid tour export string format");
+        }
+
+        int index = 1; // Skip the type field
+
+        String id = fields.get(index++);
+        String name = fields.get(index++);
+        String description = fields.get(index++);
+
+        // Start location
+        String startLocName = fields.get(index++);
+        double startLat = fields.get(index).isEmpty() ? 0 : Double.parseDouble(fields.get(index++));
+        double startLng = fields.get(index).isEmpty() ? 0 : Double.parseDouble(fields.get(index++));
+        Location startLocation = new Location(startLocName, startLat, startLng);
+
+        // End location
+        String endLocName = fields.get(index++);
+        double endLat = fields.get(index).isEmpty() ? 0 : Double.parseDouble(fields.get(index++));
+        double endLng = fields.get(index).isEmpty() ? 0 : Double.parseDouble(fields.get(index++));
+        Location endLocation = new Location(endLocName, endLat, endLng);
+
+        String transportType = fields.get(index++);
+        Double distance = fields.get(index).isEmpty() ? null : Double.parseDouble(fields.get(index++));
+        Double estimatedTime = fields.get(index).isEmpty() ? null : Double.parseDouble(fields.get(index++));
+        String routeInformation = fields.get(index);
+
+        return new TourItem(
+            id, name, description, startLocation, endLocation,
+            transportType, distance, estimatedTime, routeInformation
+        );
+    }
+
+    /**
+     * Parses a CSV line into fields, handling quoted values
+     */
+    private static List<String> parseCsvLine(String line) {
+        List<String> result = new ArrayList<>();
+        boolean inQuotes = false;
+        StringBuilder field = new StringBuilder();
+
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+
+            if (c == '"') {
+                // Check if this is an escaped quote
+                if (i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                    field.append('"');
+                    i++; // Skip the next quote
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (c == ',' && !inQuotes) {
+                result.add(field.toString());
+                field = new StringBuilder();
+            } else {
+                field.append(c);
+            }
+        }
+
+        // Add the last field
+        result.add(field.toString());
+        return result;
     }
 }

@@ -20,8 +20,7 @@
         <Region HBox.hgrow="ALWAYS" />
         <Button text="Create Log" onAction="#onCreateLogButtonClick" />
         <Button text="Edit Log" fx:id="editButton" onAction="#onEditLogButtonClick"/>
-        <Button text="Delete Log" fx:id="deleteButton" onAction="#onDeleteLogButtonClick"
-                style="-fx-background-color: #ffcccc;"/>
+        <Button text="Delete Log" fx:id="deleteButton" onAction="#onDeleteLogButtonClick" style="-fx-background-color: #ffcccc;"/>
     </HBox>
 
     <!-- TableView for logs -->
@@ -29,9 +28,8 @@
         <columns>
             <TableColumn fx:id="dateColumn" text="Date" />
             <TableColumn fx:id="difficultyColumn" text="Difficulty" />
-            <TableColumn fx:id="commentColumn" text="Comment"  prefWidth="250" />
-            <TableColumn fx:id="totalTimeColumn" text="Time" />
-            <TableColumn fx:id="totalDistanceColumn" text="Distance" />
+            <TableColumn fx:id="commentColumn" text="Comment"  prefWidth="350" />
+            <TableColumn fx:id="totalTimeColumn" text="Time in min." />
             <TableColumn fx:id="ratingColumn" text="Rating" />
         </columns>
     </TableView>
