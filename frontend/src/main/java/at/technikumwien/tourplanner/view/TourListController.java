@@ -72,4 +72,10 @@ public class TourListController {
             this.viewModel.importTours(selectedFile);
         }
     }
+
+    @FXML
+    protected void onSummaryReportButtonClick() {
+        // Call the view model method to generate the summary report for the current tour
+        viewModel.generateSummaryReport();
+    }
 }

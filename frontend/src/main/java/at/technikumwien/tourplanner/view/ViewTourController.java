@@ -25,7 +25,7 @@ public class ViewTourController {
     @FXML private Label routeInformationLabel;
     @FXML private Button editButton;
     @FXML private Button deleteButton;
-    @FXML private ImageView tourImageView;
+    @FXML private Button overviewReportButton;
 
     private final ViewTourViewModel viewModel;
 
@@ -123,6 +123,7 @@ public class ViewTourController {
         // Disable the buttons if no tour is selected
         editButton.disableProperty().bind(Bindings.isNull(viewModel.currentTourProperty()));
         deleteButton.disableProperty().bind(Bindings.isNull(viewModel.currentTourProperty()));
+        overviewReportButton.disableProperty().bind(Bindings.isNull(viewModel.currentTourProperty()));
 
         // Initialize the WebView and load the tour map
         System.out.println("MapController");
@@ -176,11 +177,5 @@ public class ViewTourController {
     protected void onOverviewReportButtonClick() {
         // Call the view model method to generate the overview report for the current tour
         viewModel.generateOverviewReport();
-    }
-
-    @FXML
-    protected void onSummaryReportButtonClick() {
-        // Call the view model method to generate the summary report for the current tour
-        viewModel.generateSummaryReport();
     }
 }
