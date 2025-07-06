@@ -8,6 +8,8 @@ import com.lowagie.text.Font;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -24,6 +26,7 @@ import java.util.Optional;
 public class ReportService {
     private final TourService tourService;
     private final LogItemRepository logItemRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ReportService.class);
 
     @Autowired
     public ReportService(TourService tourService, JdbcTemplate jdbcTemplate, LogItemRepository logItemRepository) {
@@ -32,24 +35,35 @@ public class ReportService {
     }
 
     public byte[] generateTourOverviewReport(String tourId) {
+        logger.info("Generating tour overview report for tour ID: {}", tourId);
+
         // Get tour data
         TourItem tour = tourService.getTourById(tourId);
         if (tour == null) {
+            logger.error("Failed to generate report - Tour not found with ID: {}", tourId);
             throw new RuntimeException("Tour not found with ID: " + tourId);
         }
+        logger.debug("Retrieved tour data for '{}' (ID: {})", tour.getName(), tourId);
 
         // Get associated logs
         List<LogItem> logs = logItemRepository.findByTourId(tourId);
+        logger.debug("Retrieved {} logs for tour ID: {}", logs.size(), tourId);
 
         // Generate the PDF
-        return createTourOverviewPDF(tour, logs);
+        byte[] pdfData = createTourOverviewPDF(tour, logs);
+        logger.info("Successfully generated tour overview report for '{}' (ID: {}) - {} bytes",
+                tour.getName(), tourId, pdfData.length);
+
+        return pdfData;
     }
 
     private byte[] createTourOverviewPDF(TourItem tour, List<LogItem> logs) {
+        logger.debug("Creating PDF for tour '{}' with {} logs", tour.getName(), logs.size());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4);
 
         try {
+            long startTime = System.currentTimeMillis();
             PdfWriter.getInstance(document, baos);
             document.open();
 
@@ -81,8 +95,11 @@ public class ReportService {
             document.add(footer);
 
             document.close();
+            long duration = System.currentTimeMillis() - startTime;
+            logger.debug("PDF document created successfully in {} ms", duration);
 
         } catch (Exception e) {
+            logger.error("Failed to generate PDF report for tour '{}': {}", tour.getName(), e.getMessage(), e);
             throw new RuntimeException("Failed to generate PDF report", e);
         }
 
@@ -260,18 +277,26 @@ public class ReportService {
     }
 
     public byte[] generateTourSummaryReport() {
+        logger.info("Generating summary report for all tours");
+
         // Get all tours
         List<TourItem> allTours = tourService.getAllTours();
+        logger.debug("Retrieved {} tours for summary report", allTours.size());
 
         // Generate the PDF with all tours summary
-        return createTourSummaryPDF(allTours);
+        byte[] pdfData = createTourSummaryPDF(allTours);
+        logger.info("Successfully generated tour summary report - {} bytes", pdfData.length);
+
+        return pdfData;
     }
 
     private byte[] createTourSummaryPDF(List<TourItem> tours) {
+        logger.debug("Creating summary PDF with {} tours", tours.size());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4.rotate()); // Landscape mode for wider table
 
         try {
+            long startTime = System.currentTimeMillis();
             PdfWriter.getInstance(document, baos);
             document.open();
 
@@ -283,6 +308,7 @@ public class ReportService {
             document.add(title);
 
             if (tours.isEmpty()) {
+                logger.warn("No tours available for summary report");
                 document.add(new Paragraph("No tours available."));
             } else {
                 // Create summary table
@@ -305,9 +331,11 @@ public class ReportService {
                 }
 
                 // Add data for each tour
+                int processedTours = 0;
                 for (TourItem tour : tours) {
                     // Get logs for this tour
                     List<LogItem> tourLogs = logItemRepository.findByTourId(tour.getId());
+                    logger.trace("Processing tour '{}' with {} logs", tour.getName(), tourLogs.size());
 
                     // Calculate averages
                     double avgRating = tourLogs.stream()
@@ -340,11 +368,17 @@ public class ReportService {
                     // Format rating with 1 decimal place
                     String ratingStr = tourLogs.isEmpty() ? "N/A" : String.format("%.1f/5", avgRating);
                     summaryTable.addCell(ratingStr);
+
+                    processedTours++;
+                    if (processedTours % 10 == 0) {
+                        logger.debug("Processed {} of {} tours for summary report", processedTours, tours.size());
+                    }
                 }
 
                 document.add(summaryTable);
 
                 // Add summary statistics
+                logger.debug("Adding overall statistics to summary report");
                 addOverallStatistics(document, tours);
             }
 
@@ -356,7 +390,11 @@ public class ReportService {
             document.add(footer);
 
             document.close();
+            long duration = System.currentTimeMillis() - startTime;
+            logger.debug("Summary PDF document created successfully in {} ms", duration);
+
         } catch (Exception e) {
+            logger.error("Failed to generate summary PDF report: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to generate PDF report", e);
         }
 
@@ -364,17 +402,14 @@ public class ReportService {
     }
 
     private void addOverallStatistics(Document document, List<TourItem> tours) throws DocumentException {
-        Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14);
-        Paragraph statsTitle = new Paragraph("Overall Statistics", sectionFont);
-        statsTitle.setSpacingBefore(20);
-        statsTitle.setSpacingAfter(10);
-        document.add(statsTitle);
+        logger.debug("Calculating overall statistics for {} tours", tours.size());
 
         // Calculate total distance of all tours
         double totalDistance = tours.stream()
                 .filter(tour -> tour.getDistance() != null)
                 .mapToDouble(TourItem::getDistance)
                 .sum();
+        logger.debug("Total distance of all tours: {:.2f} km", totalDistance);
 
         // Count transport types
         long carTours = tours.stream()
