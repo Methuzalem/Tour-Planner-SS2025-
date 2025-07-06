@@ -59,4 +59,8 @@ public record TourItem(
     public String toString() {
         return name;
     }
+
+    public String getName() {
+        return name;
+    }
 }

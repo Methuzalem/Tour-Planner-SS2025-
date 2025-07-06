@@ -2,80 +2,81 @@ package at.technikumwien.tourplanner.view;
 
 import at.technikumwien.tourplanner.model.TourItem;
 import at.technikumwien.tourplanner.viewmodel.TourListViewModel;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
 import java.io.File;
 
 public class TourListController {
     @FXML
     private ListView<TourItem> tourList;
-    
+
+    @FXML
+    private TextField searchField;
+
     private final TourListViewModel viewModel;
+    private FilteredList<TourItem> filteredTours;
 
     public TourListController(TourListViewModel viewModel) {
         this.viewModel = viewModel;
     }
-    
+
     @FXML
     public void initialize() {
-        // Bind the tour list items
-        tourList.setItems(viewModel.getTourList());
-        
-        // Add selection listener endLocation update selectedTourItem when a tour is selected
+        filteredTours = new FilteredList<>(viewModel.getTourList(), p -> true);
+        tourList.setItems(filteredTours);
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredTours.setPredicate(tour -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+                return tour.getName().toLowerCase().contains(lowerCaseFilter);
+            });
+        });
+
         tourList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 viewModel.selectTour(newValue);
             }
         });
     }
-    
+
     @FXML
     private void onAddTourButtonClick() {
-        this.viewModel.createNewTour();
+        viewModel.createNewTour();
     }
 
     @FXML
     private void onExportButtonClick() {
-        this.viewModel.exportTours();
+        viewModel.exportTours();
     }
 
     @FXML
     private void onImportButtonClick() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Import Tours");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("TourPlanner Export Files (*.tpexp)", "*.tpexp"));
 
-        // Set file extension filter to only show .tpexp files
-        FileChooser.ExtensionFilter extFilter =
-                new FileChooser.ExtensionFilter("TourPlanner Export Files (*.tpexp)", "*.tpexp");
-        fileChooser.getExtensionFilters().add(extFilter);
-
-        // Set initial directory to Downloads/Tourplanner if it exists
-        String userHome = System.getProperty("user.home");
-        File initialDirectory = new File(userHome + File.separator + "Downloads" + File.separator + "Tourplanner");
-        if (initialDirectory.exists()) {
-            fileChooser.setInitialDirectory(initialDirectory);
-        } else {
-            // Fall back to Downloads directory if Tourplanner folder doesn't exist
-            File downloadsDir = new File(userHome + File.separator + "Downloads");
-            if (downloadsDir.exists()) {
-                fileChooser.setInitialDirectory(downloadsDir);
-            }
+        File userDir = new File(System.getProperty("user.home"), "Downloads/Tourplanner");
+        if (!userDir.exists()) {
+            userDir = new File(System.getProperty("user.home"), "Downloads");
+        }
+        if (userDir.exists()) {
+            fileChooser.setInitialDirectory(userDir);
         }
 
-        // Show open file dialog
         File selectedFile = fileChooser.showOpenDialog(tourList.getScene().getWindow());
-
         if (selectedFile != null) {
-            this.viewModel.importTours(selectedFile);
+            viewModel.importTours(selectedFile);
         }
     }
 
     @FXML
     protected void onSummaryReportButtonClick() {
-        // Call the view model method to generate the summary report for the current tour
         viewModel.generateSummaryReport();
     }
 }

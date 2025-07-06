@@ -12,12 +12,13 @@
 
     <HBox spacing="5" alignment="CENTER_LEFT">
         <Label text="Tour List:" style="-fx-font-weight: bold;"/>
+        <TextField fx:id="searchField" promptText="Search tours..." />
         <Region HBox.hgrow="ALWAYS" />
         <Button text="Summary Report" onAction="#onSummaryReportButtonClick"/>
         <Button text="Import" onAction="#onImportButtonClick" />
         <Button text="Export" onAction="#onExportButtonClick" />
         <Button text="+" onAction="#onAddTourButtonClick" />
     </HBox>
-    
+
     <ListView fx:id="tourList" VBox.vgrow="ALWAYS"/>
 </VBox>
